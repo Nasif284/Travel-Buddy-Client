@@ -1,7 +1,18 @@
 "use client";
+
 import { useState } from "react";
 
-export default function PasswordField({ id, label, placeholder, value, onChange }: { id: string; label: string; placeholder: string; value: string; onChange: (v: string) => void }) {
+import { FieldValues, Path, UseFormRegister } from "react-hook-form";
+
+interface PasswordFieldProps<T extends FieldValues> {
+  id: Path<T>;
+  label: string;
+  placeholder?: string;
+  register: UseFormRegister<T>;
+  error?: string;
+}
+
+export default function PasswordField<T extends FieldValues>({ id, label, placeholder, register, error }: PasswordFieldProps<T>) {
   const [visible, setVisible] = useState(false);
 
   return (
@@ -9,8 +20,10 @@ export default function PasswordField({ id, label, placeholder, value, onChange 
       <label htmlFor={id} className="block text-sm font-semibold text-[#3f4944] ml-1">
         {label}
       </label>
+
       <div className="flex items-center h-12 px-4 rounded-xl bg-[#e0e3e0] transition-all focus-within:bg-white focus-within:ring-1 focus-within:ring-[#005440]">
-        <input id={id} type={visible ? "text" : "password"} placeholder={placeholder} value={value} onChange={(e) => onChange(e.target.value)} required autoComplete="new-password" className="w-full bg-transparent border-none focus:ring-0 outline-none text-[#181d1a] placeholder:text-[#6f7a74] text-sm" />
+        <input id={id} type={visible ? "text" : "password"} placeholder={placeholder} autoComplete="new-password" {...register(id)} className="w-full bg-transparent border-none focus:ring-0 outline-none text-[#181d1a] placeholder:text-[#6f7a74] text-sm" />
+
         <button type="button" onClick={() => setVisible((v) => !v)} aria-label={visible ? "Hide password" : "Show password"} className="text-[#3f4944] hover:text-[#005440] transition-colors flex items-center ml-2 flex-shrink-0">
           {visible ? (
             <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
@@ -23,6 +36,8 @@ export default function PasswordField({ id, label, placeholder, value, onChange 
           )}
         </button>
       </div>
+
+      {error && <p className="text-sm text-red-500">{error}</p>}
     </div>
   );
 }

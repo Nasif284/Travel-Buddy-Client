@@ -1,4 +1,5 @@
 import axios from "axios";
+import { HttpCodes } from "../utils/constants/HttpCodes.containts";
 
 export const userApi = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
@@ -14,7 +15,7 @@ userApi.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if (error.response?.status === HttpCodes.UNAUTHORIZED && !originalRequest._retry) {
       originalRequest._retry = true;
 
       try {

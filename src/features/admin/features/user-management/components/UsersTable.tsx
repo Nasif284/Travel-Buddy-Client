@@ -1,4 +1,3 @@
-// components/users/UsersTable.tsx
 "use client";
 
 import { useState } from "react";
@@ -9,12 +8,18 @@ import { useDebounce } from "@/src/hooks/useDebounce.hook";
 import { DataTable } from "@/src/components/table/DataTable";
 import { TableFilters } from "@/src/components/table/TableFilters";
 import { TablePagination } from "@/src/components/table/TablePagination";
-
-import { UserActionModal } from "./UsersActionModal"; 
+import { UserActionModal } from "./UsersActionModal";
 import { buildUserColumns } from "./UserColumns";
 import type { UserAction } from "./UsersActionModal";
+import type { SortOrder } from "@/src/components/table/TableFilters";
 
 const LIMIT = 5;
+
+const SORT_OPTIONS = [
+  { value: "createdAt", label: "Sort by: Joined" },
+  { value: "fullName", label: "Sort by: Name" },
+  { value: "email", label: "Sort by: Email" },
+];
 
 export default function UsersTable() {
   const [search, setSearch] = useState("");
@@ -22,6 +27,9 @@ export default function UsersTable() {
   const [verifiedFilter, setVerifiedFilter] = useState("");
   const [joinedFilter, setJoinedFilter] = useState("");
   const [page, setPage] = useState(1);
+
+  const [sortBy, setSortBy] = useState("createdAt");
+  const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
 
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -40,9 +48,12 @@ export default function UsersTable() {
     joined: joinedFilter,
     status: statusFilter,
     search: debouncedSearch,
+    sortBy, 
+    sortOrder,
   });
 
   const changeStatus = useChangeUserStatus();
+
 
   function handleRowClick(user: User) {
     setSelectedIds((prev) => {
@@ -61,8 +72,17 @@ export default function UsersTable() {
     setActionModal(null);
   }
 
-  const columns = buildUserColumns(openMenuId, setOpenMenuId, handleAction);
+  function handleSortBy(value: string) {
+    setSortBy(value);
+    setPage(1);
+  }
 
+  function handleSortOrder(value: SortOrder) {
+    setSortOrder(value);
+    setPage(1);
+  }
+
+  const columns = buildUserColumns(openMenuId, setOpenMenuId, handleAction);
   const users = data?.data?.users ?? [];
   const total = data?.data?.total ?? 0;
   const totalPages = data?.data?.totalPages ?? 1;
@@ -101,8 +121,9 @@ export default function UsersTable() {
       },
       options: [
         { value: "", label: "Joined: Any time" },
-        { value: "last_30_days", label: "Last 30 days" },
-        { value: "last_7_days", label: "Last 7 days" },
+        { value: "1y", label: "Last one year" },
+        { value: "30d", label: "Last 30 days" },
+        { value: "7d", label: "Last 7 days" },
       ],
     },
   ];
@@ -122,10 +143,17 @@ export default function UsersTable() {
         }}
         searchPlaceholder="Search by name, email, phone..."
         filters={filters}
+        sort={{
+          sortBy,
+          sortOrder,
+          onSortBy: handleSortBy,
+          onSortOrder: handleSortOrder,
+          options: SORT_OPTIONS,
+        }}
       />
 
       <DataTable columns={columns} data={users} rowKey={(u) => u.id} isLoading={isLoading} emptyMessage="No users match your filters." onRowClick={handleRowClick} selectedIds={selectedIds} />
-
+      
       {!isLoading && total > 0 && <TablePagination page={page} totalPages={totalPages} total={total} limit={LIMIT} onPageChange={setPage} />}
 
       {actionModal && <UserActionModal userId={actionModal.userId} action={actionModal.action} onConfirm={handleConfirm} onClose={() => setActionModal(null)} isLoading={changeStatus.isPending} />}

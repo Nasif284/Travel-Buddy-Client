@@ -37,6 +37,8 @@ export interface GetAllUsersQuery {
   status?: string;
   verified?: string;
   joined?: string;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
 }
 
 export interface ChangeUserStatus {
