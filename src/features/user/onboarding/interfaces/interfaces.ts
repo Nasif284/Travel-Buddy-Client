@@ -3,3 +3,10 @@ export type Option = {
   label: string;
   icon: React.ReactNode;
 };
+
+export interface TravelStyleData {
+  travelType: string;
+  interests: string[];
+  travelPersonality: string;
+  matchWith: string;
+}

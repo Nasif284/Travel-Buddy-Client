@@ -100,15 +100,7 @@ export default function TravelPlanPage() {
             <textarea rows={3} value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Tell us more about your ideal trip..." className="w-full p-4 bg-[#e0e3e0] rounded-xl border-none outline-none focus:ring-2 focus:ring-[#005440] focus:bg-white transition-all placeholder:text-[#6f7a74] text-[#181d1a] text-sm resize-none" />
           </div>
 
-          <div className="flex items-center justify-between pt-8 border-t border-[#bec9c3]/10">
-            <button
-              type="button"
-              // onClick={() => router.back()}
-              className="text-[#0F6E56] font-bold text-sm hover:-translate-x-1 transition-transform flex items-center gap-1.5"
-            >
-              {Icons.arrowBack}
-              Back
-            </button>
+          <div className="flex items-center justify-end pt-8 border-t border-[#bec9c3]/10">
             <button
               type="submit"
               className="group min-w-[240px] h-[48px] px-6 bg-[#0f6e56] text-white font-bold rounded-md

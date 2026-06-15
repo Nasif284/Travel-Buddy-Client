@@ -64,7 +64,7 @@ export function useVerify() {
     mutationFn: (data: verifyEmail) => authService.verifyEmail(data),
     onSuccess: (res) => {
       toast.success(res.message);
-      router.push("/");
+      router.push("/onboarding/source");
     },
     onError: (error: AxiosError<ApiError>) => {
       toast.error(error.response?.data?.error?.message || "Something went wrong");

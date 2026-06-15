@@ -3,7 +3,7 @@
 import { useState } from "react";
 import type { User } from "../interfaces/users.interfaces";
 import { useChangeUserStatus, useGetAllUsers } from "../hooks/user-management.hooks";
-import { useDebounce } from "@/src/hooks/useDebounce.hook";
+import { useDebounce } from "@/src/hooks/debounce.hook";
 
 import { DataTable } from "@/src/components/table/DataTable";
 import { TableFilters } from "@/src/components/table/TableFilters";

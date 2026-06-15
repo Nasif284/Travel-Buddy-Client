@@ -2,6 +2,7 @@
 
 import { Icons } from "@/src/assets";
 import { useState } from "react";
+import { useSetTravelStyle } from "../hooks/onboarding.hooks";
 
 
 type TravelStyle = "Budget" | "Backpacker" | "Luxury";
@@ -16,6 +17,7 @@ export default function TravelStylePage() {
   const [personality, setPersonality] = useState<Personality>("Extrovert");
   const [matchPref, setMatchPref] = useState<MatchPref>("Everyone");
 
+  const setStyle = useSetTravelStyle()
   const allTravelStyles: TravelStyle[] = ["Budget", "Backpacker", "Luxury"];
   const allInterests: Interest[] = ["Beach", "Mountains", "Party", "Culture", "Foodie", "Hiking"];
   const allPersonalities: Personality[] = ["Introvert", "Ambivert", "Extrovert"];
@@ -30,8 +32,9 @@ export default function TravelStylePage() {
   }
 
   function handleContinue() {
-    const data = { travelStyle, interests: [...interests], personality, matchPref };
+    const data = { travelType:travelStyle.toLowerCase(), interests: [...interests], travelPersonality: personality.toLowerCase(), matchWith: matchPref.toLowerCase() };
     console.log("Form data:", data);
+    setStyle.mutate(data)
     // router.push("/onboarding/travel-plan");
   }
 
@@ -47,7 +50,6 @@ export default function TravelStylePage() {
           </div>
 
           <div className="space-y-10">
-            {/* 1 · Travel Style */}
             <fieldset className="space-y-4">
               <legend className="block text-sm font-bold text-[#181d1a] tracking-wide">How do you prefer to travel?</legend>
               <div className="flex flex-wrap gap-3">
@@ -73,6 +75,7 @@ export default function TravelStylePage() {
                   const selected = interests.has(item);
                   return (
                     <button
+                      onClick={() => toggleInterest(item)}
                       key={item}
                       type="button"
                       className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold transition-colors
@@ -80,7 +83,7 @@ export default function TravelStylePage() {
                     >
                       {item}
                       {selected && (
-                        <span onClick={() => toggleInterest(item)}>
+                        <span>
                           <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
                             <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
                           </svg>
@@ -129,14 +132,8 @@ export default function TravelStylePage() {
             </fieldset>
 
             {/* Actions */}
-            <div className="flex items-center justify-between pt-8 border-t border-[#bec9c3]/10">
-              <button
-                type="button"
-                // onClick={() => router.back()}
-                className="text-[#0F6E56] font-bold text-sm hover:-translate-x-1 transition-transform flex items-center gap-1"
-              >
-                {Icons.arrowBack} Back
-              </button>
+            <div className="flex items-center justify-end pt-8 border-t border-[#bec9c3]/10">
+       
               <button type="button" onClick={handleContinue} className="w-[160px] h-[48px] bg-[#0f6e56] text-white font-bold rounded-md hover:opacity-90 active:scale-95 transition-all shadow-md">
                 Continue
               </button>

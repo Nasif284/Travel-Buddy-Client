@@ -4,9 +4,7 @@ import { HttpCodes } from "../utils/constants/HttpCodes.containts";
 export const userApi = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
   withCredentials: true,
-  headers: {
-    "Content-Type": "application/json",
-  },
+
 });
 
 userApi.interceptors.response.use(

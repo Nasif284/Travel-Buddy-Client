@@ -4,7 +4,7 @@ import { Icons } from "../assets";
 
 export default function RightSidebar() {
   return (
-    <aside className="h-screen w-80 fixed right-0 top-0 bg-[#f1f4f1] flex flex-col p-8 space-y-12 z-50 overflow-y-auto">
+    <aside className="h-screen w-80 fixed pt-25 right-0 top-0 bg-[#f1f4f1] flex flex-col p-8 space-y-12 z-30 overflow-y-auto">
       <section>
         <h3 className="text-[#181d1a] font-bold text-lg mb-4">Trust Score</h3>
         <div className="bg-white p-6 rounded-xl shadow-sm">

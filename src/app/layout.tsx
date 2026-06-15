@@ -16,10 +16,7 @@ export default function RootLayout({
     <html lang="en" className="h-full">
       <body className="h-full bg-surface">
         <Providers>{children}</Providers>
-         <Toaster
-          position="top-right"
-          richColors
-        />
+        <Toaster position="top-right" richColors />
       </body>
     </html>
   );

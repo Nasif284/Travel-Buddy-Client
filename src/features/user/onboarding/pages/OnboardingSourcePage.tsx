@@ -1,17 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import SourceOptions from "../components/SourceOptions";
+import { useSetSource } from "../hooks/onboarding.hooks";
 
 export default function ReferralSourcePage() {
   const [selected, setSelected] = useState<string>("friends");
-  const router = useRouter();
-
+  const setSource = useSetSource()
   const handleContinue = () => {
     if (!selected) return;
     console.log("Referral source:", selected);
-    router.push("/onboarding/next");
+    setSource.mutate({source:selected})
   };
 
   return (
@@ -32,7 +31,7 @@ export default function ReferralSourcePage() {
           <p className="text-[#3f4944] text-base text-center max-w-md">This helps us understand where our community is growing.</p>
         </div>
 
-        <SourceOptions onSelect={(id:string) => setSelected(id)} selected={selected} />
+        <SourceOptions onSelect={(label:string) => setSelected(label)} selected={selected} />
 
         <button onClick={handleContinue} disabled={!selected} className="w-full h-12 bg-[#0f6e56] hover:bg-[#005440] text-white font-bold rounded-xl transition-all active:scale-[0.98] shadow-sm flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
           Continue

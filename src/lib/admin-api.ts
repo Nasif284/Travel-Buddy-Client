@@ -4,9 +4,6 @@ import { HttpCodes } from "../utils/constants/HttpCodes.containts";
 export const adminApi = axios.create({
   baseURL: `${process.env.NEXT_PUBLIC_API_URL}/admin`,
   withCredentials: true,
-  headers: {
-    "Content-Type": "application/json",
-  },
 });
 
 adminApi.interceptors.response.use(
