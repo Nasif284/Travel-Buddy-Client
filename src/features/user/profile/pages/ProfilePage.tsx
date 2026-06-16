@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useTravelerProfile } from "@/src/hooks/api/users.hooks";
 import { useParams } from "next/navigation";
+import { BuddyRequestModal } from "../components/BuddyRequestModal";
 
 const LocationIcon = () => (
   <svg className="w-[18px] h-[18px] fill-current" viewBox="0 0 24 24">
@@ -70,6 +71,7 @@ type Tab = "about" | "trips" | "reviews";
 export default function TravelerProfile() {
   const [activeTab, setActiveTab] = useState<Tab>("about");
   const [requestSent, setRequestSent] = useState(false);
+  const [showBuddyRequestModal, setShowBuddyRequestModal] = useState(false);
   const [bannerDismissed, setBannerDismissed] = useState(false);
   const params = useParams();
   const { data, isLoading } = useTravelerProfile(params.id as string);
@@ -89,7 +91,7 @@ export default function TravelerProfile() {
 
               {/* Action buttons */}
               <div className="absolute top-4 right-4 flex gap-2">
-                <button onClick={() => setRequestSent(true)} disabled={requestSent} className="bg-[#0f6e56] text-white px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 shadow-lg active:scale-95 transition-all disabled:opacity-60">
+                <button onClick={() => setShowBuddyRequestModal(true)} disabled={requestSent} className="bg-[#0f6e56] text-white px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 shadow-lg active:scale-95 transition-all disabled:opacity-60">
                   <PersonAddIcon />
                   {requestSent ? "Request sent" : "Send buddy request"}
                 </button>
@@ -280,7 +282,7 @@ export default function TravelerProfile() {
                   <div>
                     <h2 className="text-lg font-bold mb-4 uppercase tracking-tighter text-[#4d6b5f]">Skills</h2>
                     <div className="flex flex-wrap gap-2">
-                      {data.data.skills.map((tag) => (
+                      {data.data.skills.map((tag:string) => (
                         <span key={tag} className="bg-[#c9eadb] text-[#0f6e56] text-xs font-bold px-3 py-1.5 rounded-full">
                           {tag}
                         </span>
@@ -291,7 +293,7 @@ export default function TravelerProfile() {
                   <div>
                     <h2 className="text-lg font-bold mb-4 uppercase tracking-tighter text-[#4d6b5f]">Interests</h2>
                     <div className="flex flex-wrap gap-2">
-                      {data.data.interests.map((tag) => (
+                      {data.data.interests.map((tag:string) => (
                         <span key={tag} className="bg-[#c9eadb] text-[#0f6e56] text-xs font-bold px-3 py-1.5 rounded-full">
                           {tag}
                         </span>
@@ -303,7 +305,7 @@ export default function TravelerProfile() {
                   <div>
                     <h2 className="text-lg font-bold mb-4 uppercase tracking-tighter text-[#4d6b5f]">Languages</h2>
                     <div className="space-y-3">
-                      {data.data.languages.map((lang) => (
+                      {data.data.languages.map((lang:string) => (
                         <div key={lang} className="flex items-center justify-between">
                           <span className="font-semibold text-sm">{lang}</span>
                         </div>
@@ -352,7 +354,7 @@ export default function TravelerProfile() {
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <button onClick={() => setRequestSent(true)} className="bg-white text-[#0f6e56] px-6 py-2 rounded-xl font-black text-sm active:scale-95 transition-all">
+              <button onClick={() => setShowBuddyRequestModal(true)} className="bg-white text-[#0f6e56] px-6 py-2 rounded-xl font-black text-sm active:scale-95 transition-all">
                 Send Request
               </button>
               <button onClick={() => setBannerDismissed(true)} aria-label="Dismiss" className="p-2 text-[#9aedcf] hover:text-white transition-colors">
@@ -361,6 +363,24 @@ export default function TravelerProfile() {
             </div>
           </div>
         )}
+        <BuddyRequestModal
+          isOpen={showBuddyRequestModal}
+          onClose={() => setShowBuddyRequestModal(false)}
+          user={{
+            name: data.data.fullName,
+            avatarUrl: data.data.avatarUrl,
+          }}
+          onSend={(message:string) => {
+            console.log(message);
+
+            // sendBuddyRequest.mutate({
+            //   receiverId: data.data.id,
+            //   message,
+            // });
+
+            setRequestSent(true);
+          }}
+        />
       </>
     );
   }

@@ -16,7 +16,7 @@ const LocationBadge = () => {
 
         <div className="flex flex-col leading-tight">
           <span className="text-sm font-bold text-[#181d1a]">
-            {data?.data?.city}, {data?.data?.district}, {data?.data?.state}
+            {data?.data?.city}{data?.data?.district !== data?.data?.city && ", "+data?.data?.district}, {data?.data?.state}
           </span>
         </div>
       </div>
