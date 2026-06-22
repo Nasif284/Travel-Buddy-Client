@@ -3,9 +3,9 @@ import type { Column } from "../../../../../components/table/DataTable";
 import type { ActionMenuItem } from "../../../../../components/table/TableActionMenu";
 import { TableActionMenu } from "../../../../../components/table/TableActionMenu";
 import { UserStatusBadge } from "./UserStatusBadge";
-import { Icons } from "../../../../../assets";
 import type { UserAction } from "./UsersActionModal";
 import { User, UserStatus } from "../interfaces/users.interfaces";
+import { VerifiedIcon } from "@/src/assets/icons";
 
 export function getUserActions(user: User, onAction: (userId: string, action: UserAction) => void): ActionMenuItem[] {
   const items: ActionMenuItem[] = [];
@@ -78,7 +78,7 @@ export function buildUserColumns(openMenuId: string | null, onToggleMenu: (id: s
       key: "verified",
       header: "Verified",
       align: "center",
-      render: (user) => <Icons.VerifiedIcon filled={user.isEmailVerified} />,
+      render: (user) => <VerifiedIcon filled={user.isEmailVerified} />,
     },
     {
       key: "action",

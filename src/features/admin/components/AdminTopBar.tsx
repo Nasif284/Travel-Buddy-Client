@@ -1,6 +1,6 @@
 "use client";
 
-import { Icons } from "@/src/assets";
+import { NotificationsIcon } from "@/src/assets/icons";
 import { useAuthStore } from "@/src/store/auth.store";
 import { useState } from "react";
 
@@ -25,7 +25,7 @@ export default function AdminTopBar() {
 
       <div className="flex items-center gap-4">
         <button className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-stone-50 active:scale-90 transition-transform text-[#3f4944] relative">
-          <Icons.NotificationsIcon />
+          <NotificationsIcon />
           <span className="absolute top-2 right-2 w-2 h-2 bg-[#ba1a1a] rounded-full border-2 border-white" />
         </button>
 

@@ -1,6 +1,7 @@
 "use client";
 
-import { Icons } from "../../assets/icons";
+import { ChevronLeftIcon, ChevronRightIcon } from "@/src/assets/icons";
+
 
 interface TablePaginationProps {
   page: number;
@@ -30,7 +31,7 @@ export function TablePagination({ page, totalPages, total, limit, onPageChange }
 
       <div className="flex items-center gap-1">
         <button disabled={page === 1} onClick={() => onPageChange(Math.max(1, page - 1))} className="p-1 rounded hover:bg-[#ebe8e4] transition-colors text-[#3f4944] disabled:opacity-40">
-          <Icons.ChevronLeftIcon />
+          <ChevronLeftIcon />
         </button>
 
         {page > 2 && (
@@ -52,7 +53,7 @@ export function TablePagination({ page, totalPages, total, limit, onPageChange }
         )}
 
         <button disabled={page === totalPages} onClick={() => onPageChange(Math.min(totalPages, page + 1))} className="p-1 rounded hover:bg-[#ebe8e4] transition-colors text-[#3f4944] disabled:opacity-40">
-          <Icons.ChevronRightIcon />
+          <ChevronRightIcon />
         </button>
       </div>
     </div>

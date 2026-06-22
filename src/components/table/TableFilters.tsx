@@ -1,6 +1,7 @@
 "use client";
 
-import { Icons } from "../../assets/icons";
+import { SearchIcon, SortAscIcon, SortDescIcon } from "@/src/assets/icons";
+
 
 export interface FilterOption {
   value: string;
@@ -39,7 +40,7 @@ export function TableFilters({ searchValue, onSearchChange, searchPlaceholder = 
     <div className="bg-white p-4 rounded-xl shadow-sm border border-[#bec9c3]/10 flex flex-wrap items-center gap-4">
       <div className="relative w-[300px]">
         <span className="absolute inset-y-0 left-3 flex items-center text-[#3f4944]/50">
-          <Icons.SearchIcon />
+          <SearchIcon />
         </span>
         <input type="text" value={searchValue} onChange={(e) => onSearchChange(e.target.value)} placeholder={searchPlaceholder} className="w-full pl-10 pr-4 py-2 bg-[#f6f3ef] border border-[#bec9c3]/20 rounded-lg text-sm focus:ring-2 focus:ring-[#005440]/20 focus:border-[#005440] transition-all outline-none text-[#1c1c1a]" />
       </div>
@@ -71,12 +72,12 @@ export function TableFilters({ searchValue, onSearchChange, searchPlaceholder = 
           <button onClick={() => sort.onSortOrder(sort.sortOrder === "asc" ? "desc" : "asc")} title={sort.sortOrder === "asc" ? "Ascending" : "Descending"} className="flex items-center gap-1.5 bg-[#f6f3ef] border border-[#bec9c3]/20 rounded-lg text-xs font-semibold py-2 px-3 text-[#1c1c1a] hover:bg-[#ebe8e4] transition-colors cursor-pointer select-none">
             {sort.sortOrder === "asc" ? (
               <>
-                <Icons.SortAscIcon />
+                <SortAscIcon />
                 <span>Asc</span>
               </>
             ) : (
               <>
-                <Icons.SortDescIcon />
+                <SortDescIcon />
                 <span>Desc</span>
               </>
             )}

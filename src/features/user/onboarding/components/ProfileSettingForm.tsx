@@ -95,7 +95,7 @@ const ProfileSettingForm = () => {
         city: res.data.district,
         stateCode: res.data.stateCode,
       });
-     setIsAutoFilling(false);
+      setIsAutoFilling(false);
     }, console.error);
   };
 
@@ -361,8 +361,8 @@ const ProfileSettingForm = () => {
       </div>
 
       <div className="flex items-center justify-end pt-8 border-t border-[#bec9c3]/10">
-        <button type="submit" className="w-40 h-12 bg-[#0f6e56] text-white font-bold rounded-xl hover:opacity-90 active:scale-95 transition-all shadow-md">
-          Continue
+        <button type="submit" className={`w-40 h-12 ${setProfile.isPending ? "bg-[#addbd0]" : "bg-[#0f6e56]"}  text-white font-bold rounded-xl hover:opacity-90 active:scale-95 transition-all shadow-md`}>
+          {setProfile.isPending ? "Submitting..." : "Continue"}
         </button>
       </div>
     </form>

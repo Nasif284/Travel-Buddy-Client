@@ -3,18 +3,47 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useLogout } from "../features/user/auth/hooks/auth.hooks";
-import { Icons } from "../assets";
+import { ChatIcon, ConnectionsIcon, ExploreIcon, HeartIcon, HomeIcon, PersonIcon, SettingsIcon } from "../assets/icons";
 
 type NavItem = { href: string; label: string; icon: React.ReactNode };
 
 
 const NAV_ITEMS: NavItem[] = [
-  { href: "/", label: "Home", icon: <Icons.HomeIcon /> },
-  { href: "/matches", label: "Matches", icon: <Icons.HeartIcon /> },
-  { href: "/trips", label: "Trips", icon: <Icons.ExploreIcon /> },
-  { href: "/messages", label: "Messages", icon: <Icons.ChatIcon /> },
-  { href: "/profile", label: "Profile", icon: <Icons.PersonIcon /> },
-  { href: "/settings", label: "Settings", icon: <Icons.SettingsIcon /> },
+  {
+    href: "/",
+    label: "Home",
+    icon: <HomeIcon />,
+  },
+  {
+    href: "/matches",
+    label: "Matches",
+    icon: <HeartIcon />,
+  },
+  {
+    href: "/connections",
+    label: "Connections",
+    icon: <ConnectionsIcon />,
+  },
+  {
+    href: "/trips",
+    label: "Trips",
+    icon: <ExploreIcon />,
+  },
+  {
+    href: "/messages",
+    label: "Messages",
+    icon: <ChatIcon />,
+  },
+  {
+    href: "/profile",
+    label: "Profile",
+    icon: <PersonIcon />,
+  },
+  {
+    href: "/settings",
+    label: "Settings",
+    icon: <SettingsIcon />,
+  },
 ];
 
 export default function LeftSidebar() {

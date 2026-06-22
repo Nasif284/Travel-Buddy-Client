@@ -1,4 +1,7 @@
+
 import { useState } from "react";
+import { BuddyRequestModalProps } from "../interfaces/profile.interface";
+
 
 export function BuddyRequestModal({ isOpen, onClose, onSend, user }: BuddyRequestModalProps) {
   const [message, setMessage] = useState("");

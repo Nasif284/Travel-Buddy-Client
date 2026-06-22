@@ -1,6 +1,7 @@
 export interface UserWithDetails {
   id: string;
   fullName: string;
+  bio: string | null;
   avatarUrl: string;
   state: string;
   coverUrl: string;

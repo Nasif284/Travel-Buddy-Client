@@ -1,15 +1,14 @@
 import { useState, SubmitEvent } from "react";
 import { useForgotPasswordOtp } from "@/src/features/user/auth/hooks/auth.hooks";
 
-
 const ForgotPasswordForm = () => {
-      const [email, setEmail] = useState("");
-      const sendOtp = useForgotPasswordOtp();
-      const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        localStorage.setItem("email", email);
-        sendOtp.mutate({ email });
-      };
+  const [email, setEmail] = useState("");
+  const sendOtp = useForgotPasswordOtp();
+  const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    localStorage.setItem("email", email);
+    sendOtp.mutate({ email });
+  };
   return (
     <form className="w-full space-y-6" onSubmit={handleSubmit} noValidate>
       <div className="space-y-2">
@@ -26,6 +25,6 @@ const ForgotPasswordForm = () => {
       </button>
     </form>
   );
-}
+};
 
-export default ForgotPasswordForm
+export default ForgotPasswordForm;

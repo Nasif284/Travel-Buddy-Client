@@ -1,4 +1,4 @@
-import { usersServices } from "@/src/services/users.service";
+import { usersServices } from "@/src/features/user/matches-connections/services/users.service";
 import { useQuery } from "@tanstack/react-query";
 
 export function useGetUsersForCards(params: { page: number; limit: number }) {
@@ -15,9 +15,16 @@ export function useGetNearbyUsers(params: { page: number; limit: number }) {
   });
 }
 
-export function useTravelerProfile(id:string) {
+export function useTravelerProfile(id: string) {
   return useQuery({
     queryKey: ["user", id],
     queryFn: () => usersServices.getTravelerProfile(id),
+  });
+}
+
+export function useGetMe() {
+  return useQuery({
+    queryKey: ["user_profile"],
+    queryFn: () => usersServices.getMe(),
   });
 }

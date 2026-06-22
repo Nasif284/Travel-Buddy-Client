@@ -1,387 +1,471 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
-import { useTravelerProfile } from "@/src/hooks/api/users.hooks";
-import { useParams } from "next/navigation";
-import { BuddyRequestModal } from "../components/BuddyRequestModal";
+import { useGetMe } from "@/src/features/user/matches-connections/hooks/users.hooks";
+import { useState, useRef,useMemo, useEffect } from "react";
 
-const LocationIcon = () => (
-  <svg className="w-[18px] h-[18px] fill-current" viewBox="0 0 24 24">
-    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
-  </svg>
-);
-const CalendarIcon = () => (
-  <svg className="w-[18px] h-[18px] fill-current" viewBox="0 0 24 24">
-    <path d="M20 3h-1V1h-2v2H7V1H5v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H4V8h16v13z" />
-  </svg>
-);
-const SparkleIcon = () => (
-  <svg className="w-[14px] h-[14px] fill-current" viewBox="0 0 24 24">
-    <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z" />
-  </svg>
-);
-const PersonAddIcon = () => (
-  <svg className="w-[18px] h-[18px] fill-current" viewBox="0 0 24 24">
-    <path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V8H4v2H2v2h2v2h2v-2h2v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-  </svg>
-);
-const ChatIcon = () => (
-  <svg className="w-[18px] h-[18px] fill-current" viewBox="0 0 24 24">
-    <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
-  </svg>
-);
-const PersonIcon = () => (
-  <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-  </svg>
-);
-const MapIcon = () => (
-  <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-    <path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z" />
-  </svg>
-);
-const ReviewsIcon = () => (
-  <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-    <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 9h-2V5h2v6zm0 4h-2v-2h2v2z" />
-  </svg>
-);
-const CloseIcon = () => (
-  <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-    <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
-  </svg>
-);
-const StarFilled = ({ sm = false }) => (
-  <svg className={`fill-current text-[#0f6e56] ${sm ? "w-3 h-3" : "w-5 h-5"}`} viewBox="0 0 24 24">
-    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-  </svg>
-);
-const StarOutline = ({ sm = false }) => (
-  <svg className={`fill-current text-[#bec9c3] ${sm ? "w-3 h-3" : "w-5 h-5"}`} viewBox="0 0 24 24">
-    <path d="M22 9.24l-7.19-.62L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.63-7.03L22 9.24zM12 15.4l-3.76 2.27 1-4.28-3.32-2.88 4.38-.38L12 6.1l1.71 4.04 4.38.38-3.32 2.88 1 4.28L12 15.4z" />
-  </svg>
-);
+import { UpdateProfileData, UserProfile } from "../interfaces/profile.interface";
+import { useUpdateAvatar, useUpdateCover, useUpdateProfile } from "@/src/features/user/profile/hooks/profile.hooks";
+import { capitalizeFirstLetter } from "@/src/utils/capitalizseFirstLetter";
+import TagGroup from "../components/TagGroup";
+import { CalendarIcon, CameraIcon, DescriptionIcon, EditIcon, ReviewsIcon, ShareIcon, StarEmpty, StarFull, TuneSmallIcon, VerifiedIcon, VerifiedUserIcon } from "@/src/assets/icons";
 
-function Stars({ count, max = 5, sm = false }: { count: number; max?: number; sm?: boolean }) {
-  return <div className="flex gap-0.5">{Array.from({ length: max }, (_, i) => (i < count ? <StarFilled key={i} sm={sm} /> : <StarOutline key={i} sm={sm} />))}</div>;
+function Stars({ count }: { count: number }) {
+  return <div className="flex text-[#005440]">{Array.from({ length: 5 }, (_, i) => (i < count ? <StarFull key={i} /> : <StarEmpty key={i} />))}</div>;
 }
+const personalityOptions = [
+  {
+    value: "introvert",
+    label: "Introvert",
+  },
+  {
+    value: "ambivert",
+    label: "Ambivert",
+  },
+  {
+    value: "extrovert",
+    label: "Extrovert",
+  },
+];
 
-type Tab = "about" | "trips" | "reviews";
+export default function ProfileManagement() {
+  const { data, isLoading } = useGetMe();
+  const initialProfile = data?.data;
+  const [profile, setProfile] = useState<UserProfile>({
+    id: "",
+    fullName: "",
+    bio: "",
+    avatarUrl: "",
+    coverUrl: "",
+    age: 0,
+    city: "",
+    state: "",
+    country: "",
+    travelType: "",
+    travelPersonality: "",
+    isTraveling: false,
+    interests: [],
+    skills: [],
+    languages: [],
+    createdAt: new Date(),
+  });
+  useEffect(() => {
+    if (data?.data) {
+      setProfile(data.data);
+    }
+  }, [data]);
 
-export default function TravelerProfile() {
-  const [activeTab, setActiveTab] = useState<Tab>("about");
-  const [requestSent, setRequestSent] = useState(false);
-  const [showBuddyRequestModal, setShowBuddyRequestModal] = useState(false);
-  const [bannerDismissed, setBannerDismissed] = useState(false);
-  const params = useParams();
-  const { data, isLoading } = useTravelerProfile(params.id as string);
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [coverFile, setCoverFile] = useState<File | null>(null);
+
+  const avatarInputRef = useRef<HTMLInputElement>(null);
+  const coverInputRef = useRef<HTMLInputElement>(null);
+
+  const [editingBio, setEditingBio] = useState(false);
+
+  const profileUpdate = useUpdateProfile();
+  const avatarUpdate = useUpdateAvatar();
+  const coverUpdate = useUpdateCover();
+
+  const hasChanges = useMemo(() => {
+    if (!profile || !initialProfile) return false;
+
+    return JSON.stringify(profile) !== JSON.stringify(initialProfile) || avatarFile !== null || coverFile !== null;
+  }, [profile, initialProfile, avatarFile, coverFile]);
+
+  const hasProfileChanges = useMemo(() => {
+    if (!profile || !initialProfile) return false;
+
+    return JSON.stringify(profile) !== JSON.stringify(initialProfile);
+  }, [profile, initialProfile]);
+  const saving = profileUpdate.isPending || avatarUpdate.isPaused || coverUpdate.isPending
+  const handleSave = async () => {
+    const coverFormData = new FormData();
+    const avatarFormData = new FormData();
+
+    if (avatarFile) {
+      avatarFormData.append("avatar", avatarFile);
+      avatarUpdate.mutate(avatarFormData);
+    }
+
+    if (coverFile) {
+      coverFormData.append("cover", coverFile);
+      coverUpdate.mutate(coverFormData);
+    }
+
+    if (hasProfileChanges) {
+      const payload: UpdateProfileData = {
+        fullName: profile.fullName,
+        bio: profile.bio!,
+        isTraveling: profile.isTraveling,
+        travelPersonalityCode: profile.travelPersonality!,
+        interests: profile.interests.map((e) => capitalizeFirstLetter(e)),
+        languages: profile.languages.map((e) => capitalizeFirstLetter(e)),
+        skills: profile.skills.map((e)=> capitalizeFirstLetter(e)),
+      };
+
+      profileUpdate.mutate(payload)
+    }
+
+    setAvatarFile(null);
+    setCoverFile(null);
+  };
   if (isLoading) {
-    return <h1>Loading...</h1>;
-  } else {
     return (
-      <>
-        <main className="ml-64 min-h-screen pb-32">
-          <div className="max-w-[800px] mx-auto pt-24 px-4 sm:px-6">
-            {/* ── Hero ──────────────────────────────────────────────────────── */}
-            <section className="relative mt-4">
-              {/* Cover image */}
-              <div className="w-full h-[220px] rounded-xl overflow-hidden shadow-sm">
-                <img src={data.data.coverUrl} alt="Alex Rivera's cover photo" className="w-full h-full object-cover" />
-              </div>
-
-              {/* Action buttons */}
-              <div className="absolute top-4 right-4 flex gap-2">
-                <button onClick={() => setShowBuddyRequestModal(true)} disabled={requestSent} className="bg-[#0f6e56] text-white px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 shadow-lg active:scale-95 transition-all disabled:opacity-60">
-                  <PersonAddIcon />
-                  {requestSent ? "Request sent" : "Send buddy request"}
-                </button>
-                {/* <button className="bg-white/90 backdrop-blur-sm text-[#0f6e56] px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 shadow-lg active:scale-95 transition-all">
-                    <ChatIcon />
-                    Message
-                  </button> */}
-              </div>
-
-              {/* Identity */}
-              <div className="flex flex-col sm:flex-row items-end gap-4 px-6 -mt-12 relative z-10">
-                <div className="w-32 h-32 rounded-full border-4 border-[#f7faf6] shadow-md overflow-hidden bg-white flex-shrink-0">
-                  <img src={data.data.avatarUrl} alt="Alex Rivera" className="w-full h-full object-cover" />
-                </div>
-                <div className="flex-1 pb-2 w-full">
-                  <div className="flex items-center gap-3 flex-wrap">
-                    <h1 className="text-3xl font-black tracking-tight text-[#181d1a] font-headline">
-                      {data.data.fullName}, {data.data.age}
-                    </h1>
-                    <span className="bg-[#c9eadb] text-[#4d6b5f] text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider flex items-center gap-1">
-                      <SparkleIcon /> 92% match
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-4 mt-1 text-[#4d6b5f] font-medium text-sm flex-wrap">
-                    <span className="flex items-center gap-1">
-                      <LocationIcon /> {data.data.state}, {data.data.country}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <CalendarIcon /> Member since{" "}
-                      {new Date(data.data.createdAt).toLocaleDateString("en-US", {
-                        month: "short",
-                        year: "numeric",
-                      })}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            {/* ── Stats ─────────────────────────────────────────────────────── */}
-            {/* <section className="grid grid-cols-3 gap-4 mt-8">
-                {[
-                  { label: "Trips", value: "8" },
-                  { label: "Rating", value: "4.9", star: true },
-                  { label: "Buddies", value: "12" },
-                ].map(({ label, value, star }) => (
-                  <div key={label} className="bg-[#f1f4f1] p-5 rounded-xl text-center">
-                    <p className="text-[#4d6b5f] text-xs font-bold uppercase tracking-widest mb-1">{label}</p>
-                    <p className="text-2xl font-black text-[#0f6e56] flex items-center justify-center gap-1">
-                      {value}
-                      {star && <StarFilled />}
-                    </p>
-                  </div>
-                ))}
-              </section> */}
-
-            {/* ── Tabs ──────────────────────────────────────────────────────── */}
-            <nav className="flex gap-8 border-b border-[#bec9c3]/30 mt-8 px-2">
-              {(["about", "trips", "reviews"] as Tab[]).map((tab) => (
-                <button key={tab} onClick={() => setActiveTab(tab)} className={`pb-3 text-lg font-headline capitalize transition-colors ${activeTab === tab ? "text-[#0f6e56] font-bold border-b-4 border-[#0f6e56] -mb-px" : "text-[#4d6b5f] font-semibold hover:text-[#0f6e56]"}`}>
-                  {tab === "trips" ? "Travel plans" : tab.charAt(0).toUpperCase() + tab.slice(1)}
-                </button>
-              ))}
-            </nav>
-
-            {/* ── About Tab ─────────────────────────────────────────────────── */}
-            {activeTab === "about" && (
-              <section className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-12">
-                {/* Left col */}
-                <div className="md:col-span-2 space-y-10">
-                  {/* Bio */}
-                  <div>
-                    <h2 className="text-xl font-bold mb-4 flex items-center gap-2 font-headline">
-                      <span className="text-[#0f6e56]">
-                        <PersonIcon />
-                      </span>{" "}
-                      Bio
-                    </h2>
-                    <p className="text-[#181d1a] leading-relaxed text-lg">{data.data.bio}</p>
-                  </div>
-
-                  {/* Active travel plans */}
-                  {/* <div>
-                      <h2 className="text-xl font-bold mb-4 flex items-center justify-between font-headline">
-                        <span className="flex items-center gap-2">
-                          <span className="text-[#0f6e56]">
-                            <MapIcon />
-                          </span>{" "}
-                          Active travel plans
-                        </span>
-                        <Link href="#" className="text-[#0f6e56] text-sm font-bold hover:underline">
-                          View all
-                        </Link>
-                      </h2>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {[
-                          {
-                            title: "Northern India Expedition",
-                            dates: "Oct 12 - Oct 28, 2024",
-                            buddies: "+2 buddies",
-                            img: "https://lh3.googleusercontent.com/aida-public/AB6AXuC6lRSqLD5n8bfQEv7kqdsWwCZDxZUcO1NQulrrd7Tt9N6PQc1WGFUM2M6x93LZ7o9rYlk_idwYOyVkHFCEF-AEFPGFf_0JYJkBR65VmYRdohxWAhlWp1GDGzNyq3wPYPr_Vs7YbGQ6qbuLQXSaez0cYDyA2ZQLiiDXeu3FGtCVVPeHp7NXC9qtGLXoeQXRLzdaK-_5leEo3Sj_gJCC4c4DsKs3ixCKyQHvZLCQX-VmgX93zbbSB15is0hzIvK3aQAt1bce8oWT8Q8",
-                            alt: "India trip",
-                          },
-                          {
-                            title: "Parisian Weekend",
-                            dates: "Dec 05 - Dec 08, 2024",
-                            buddies: "1 buddy joined",
-                            img: "https://lh3.googleusercontent.com/aida-public/AB6AXuAXVFPiPSeJwq-xWoHANcG8ms0mr0whVQd5KVjCDODi76FNHT2GB4X9xIB2G1iZpkygr_CJWYI4xvcMQz1GsOfCy24SMhZbjkp3T451hgrzL924L711te51RCIM-xWTCuNJmNx8wrgLhFYaNCzhzSCXkOfJMUYRsCbvBEuC3H5hda9jgF8dFrj1PIqGY-nCjAOQGT2oYPqwCssBrsaLHcOwDTeq-EZ5b8V93ZA0OyqRBOz5FvtcJBTCOyNdNxFl84gM5YUDEzcSB_Q",
-                            alt: "Paris trip",
-                          },
-                        ].map((trip) => (
-                          <div key={trip.title} className="bg-white rounded-xl overflow-hidden shadow-sm group cursor-pointer hover:shadow-md transition-all">
-                            <div className="h-32 w-full overflow-hidden">
-                              <img src={trip.img} alt={trip.alt} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                            </div>
-                            <div className="p-4">
-                              <h3 className="font-bold text-[#0f6e56]">{trip.title}</h3>
-                              <p className="text-xs text-[#4d6b5f] mt-1">{trip.dates}</p>
-                              <div className="flex mt-3 gap-1 items-center">
-                                <div className="w-6 h-6 rounded-full bg-slate-200 border border-white" />
-                                <div className="w-6 h-6 rounded-full bg-slate-300 border border-white -ml-1" />
-                                <span className="text-[10px] ml-1 text-[#4d6b5f] font-bold">{trip.buddies}</span>
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div> */}
-
-                  {/* Reviews */}
-                  {/* <div>
-                      <h2 className="text-xl font-bold mb-6 flex items-center justify-between font-headline">
-                        <span className="flex items-center gap-2">
-                          <span className="text-[#0f6e56]">
-                            <ReviewsIcon />
-                          </span>{" "}
-                          Reviews
-                        </span>
-                        <Link href="#" className="text-[#0f6e56] text-sm font-bold hover:underline">
-                          View all
-                        </Link>
-                      </h2>
-                      <div className="space-y-6">
-                    
-                        <div className="bg-[#f1f4f1]/50 p-6 rounded-xl">
-                          <div className="flex items-center gap-3 mb-3">
-                            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAgadLfmZlZpWqptIWwA38huO7LmAt6X6nnrPH83HGnl0MF3eaerCyHG089Wh_RGBXg8pvfxXLn-dt3tpXr3PZTjQm-_U8hd_D2Y-z31C00tUc5mTg6A-kE-cLYDfyOMQ_QTBKYfNvZ0XKHdbkAATOQrRsNSPv_Ie9HicsFuaTf-zFJynXMcHjTMd5t21XBYufnTaLSWVK4vVewIJn6tks1PzefymXJ0n1lGDx4AHdYQK_ncx8XkfGQblN5lCSKUBYHfeJvaFafPlI" alt="Sarah L." className="w-10 h-10 rounded-full object-cover" />
-                            <div>
-                              <h4 className="font-bold text-sm">Sarah L.</h4>
-                              <Stars count={5} sm />
-                            </div>
-                          </div>
-                          <p className="text-sm text-[#181d1a] italic leading-relaxed">&ldquo;Alex is a fantastic travel partner! He has an incredible eye for photography and knows the best tacos in Mexico City. Very reliable and easy-going.&rdquo;</p>
-                        </div>
-
-                   
-                        <div className="bg-[#f1f4f1]/50 p-6 rounded-xl">
-                          <div className="flex items-center gap-3 mb-3">
-                            <div className="w-10 h-10 rounded-full bg-[#0f6e56] text-white flex items-center justify-center font-bold text-sm">MK</div>
-                            <div>
-                              <h4 className="font-bold text-sm">Mark K.</h4>
-                              <Stars count={4} sm />
-                            </div>
-                          </div>
-                          <p className="text-sm text-[#181d1a] italic leading-relaxed">&ldquo;Traveled through Japan with Alex. He&apos;s very organized with bookings but flexible enough for spontaneous adventures. 10/10 recommendation!&rdquo;</p>
-                        </div>
-                      </div>
-                    </div> */}
-                </div>
-
-                {/* Right col */}
-                <div className="space-y-10">
-                  {/* Travel Style */}
-                  <div>
-                    <h2 className="text-lg font-bold mb-4 uppercase tracking-tighter text-[#4d6b5f]">Travel Style</h2>
-                    <div className="flex flex-wrap gap-2">
-                      <span className="bg-[#c9eadb] text-[#0f6e56] text-xs font-bold px-3 py-1.5 rounded-full">{data.data.travelType}</span>
-                    </div>
-                  </div>
-
-                  <div>
-                    <h2 className="text-lg font-bold mb-4 uppercase tracking-tighter text-[#4d6b5f]">Travel Personality</h2>
-                    <div className="flex flex-wrap gap-2">
-                      <span className="bg-[#c9eadb] text-[#0f6e56] text-xs font-bold px-3 py-1.5 rounded-full">{data.data.travelPersonality}</span>
-                    </div>
-                  </div>
-
-                  <div>
-                    <h2 className="text-lg font-bold mb-4 uppercase tracking-tighter text-[#4d6b5f]">Skills</h2>
-                    <div className="flex flex-wrap gap-2">
-                      {data.data.skills.map((tag:string) => (
-                        <span key={tag} className="bg-[#c9eadb] text-[#0f6e56] text-xs font-bold px-3 py-1.5 rounded-full">
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <h2 className="text-lg font-bold mb-4 uppercase tracking-tighter text-[#4d6b5f]">Interests</h2>
-                    <div className="flex flex-wrap gap-2">
-                      {data.data.interests.map((tag:string) => (
-                        <span key={tag} className="bg-[#c9eadb] text-[#0f6e56] text-xs font-bold px-3 py-1.5 rounded-full">
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Languages */}
-                  <div>
-                    <h2 className="text-lg font-bold mb-4 uppercase tracking-tighter text-[#4d6b5f]">Languages</h2>
-                    <div className="space-y-3">
-                      {data.data.languages.map((lang:string) => (
-                        <div key={lang} className="flex items-center justify-between">
-                          <span className="font-semibold text-sm">{lang}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* CTA card */}
-                  {/* <div className="p-6 bg-[#0f6e56] rounded-2xl text-white">
-                      <h3 className="font-bold text-lg leading-tight mb-2">Want to travel with Alex?</h3>
-                      <p className="text-xs text-[#9aedcf] mb-4">You both share an interest in Street Photography and Southern Europe.</p>
-                      <button onClick={() => setRequestSent(true)} disabled={requestSent} className="w-full bg-white text-[#0f6e56] font-bold py-2.5 rounded-xl text-sm shadow-sm active:scale-95 transition-transform disabled:opacity-60">
-                        {requestSent ? "Request sent ✓" : "Send Invite"}
-                      </button>
-                    </div> */}
-                </div>
-              </section>
-            )}
-
-            {/* ── Travel Plans Tab ──────────────────────────────────────────── */}
-            {activeTab === "trips" && (
-              <section className="mt-10">
-                <p className="text-[#3f4944]">Full trip list coming soon.</p>
-              </section>
-            )}
-
-            {/* ── Reviews Tab ───────────────────────────────────────────────── */}
-            {activeTab === "reviews" && (
-              <section className="mt-10">
-                <p className="text-[#3f4944]">All reviews coming soon.</p>
-              </section>
-            )}
-          </div>
-        </main>
-
-        {/* ── Sticky footer CTA ─────────────────────────────────────────────── */}
-        {!bannerDismissed && !requestSent && (
-          <div className="fixed bottom-6 left-220 -translate-x-1/2 w-[calc(100%-48px-256px)] max-w-[750px] bg-[#0f6e56] rounded-2xl p-4 shadow-2xl flex items-center justify-between z-50">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full border-2 border-white/20 overflow-hidden hidden sm:block flex-shrink-0">
-                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBdJqcvbhj1vtqM6S92lAi2EqV48QSEefe6af5J5Hwf1jzO7_rjfHHglThGRNUUlubla6e3hP6PHHBMD5kTBSaKNzd69KYa5UsR44uJTDsQWX15Vel71xrTEs5sLBZFSFj-GYN3kk_jxQ2VNGaB2m6UXo4FP-hW9StA8IfsyMtK24X6le5wJlfyLg65CCh4_ZyVYFJyFbH1vOhB1cVBP2mLv062DZ2o2uPdVlyUtEzoxiaeSIB-gPinydZDcTxw6IsnQ5qFFBSkWkc" alt="Alex Rivera" className="w-full h-full object-cover" />
-              </div>
-              <div className="text-white">
-                <p className="font-bold text-sm leading-tight">Send buddy request to Alex</p>
-                <p className="text-xs text-[#9aedcf]">He usually responds within 24 hours</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <button onClick={() => setShowBuddyRequestModal(true)} className="bg-white text-[#0f6e56] px-6 py-2 rounded-xl font-black text-sm active:scale-95 transition-all">
-                Send Request
-              </button>
-              <button onClick={() => setBannerDismissed(true)} aria-label="Dismiss" className="p-2 text-[#9aedcf] hover:text-white transition-colors">
-                <CloseIcon />
-              </button>
-            </div>
-          </div>
-        )}
-        <BuddyRequestModal
-          isOpen={showBuddyRequestModal}
-          onClose={() => setShowBuddyRequestModal(false)}
-          user={{
-            name: data.data.fullName,
-            avatarUrl: data.data.avatarUrl,
-          }}
-          onSend={(message:string) => {
-            console.log(message);
-
-            // sendBuddyRequest.mutate({
-            //   receiverId: data.data.id,
-            //   message,
-            // });
-
-            setRequestSent(true);
-          }}
-        />
-      </>
+      <main className="ml-64 min-h-screen pb-32">
+        <h1>Loading...</h1>
+      </main>
     );
   }
+  return (
+    <main className="ml-64 mt-20 flex flex-1 flex-col overflow-y-auto">
+      <div className="p-8 flex justify-center">
+        <div className="max-w-[1000px] w-full space-y-8">
+          <div className="bg-white rounded-2xl overflow-hidden border border-[#bec9c3]/15">
+            <div className="relative h-[280px] group">
+              <img src={profile.coverUrl!} alt="Cover" className="w-full h-full object-cover" />
+              <button onClick={() => coverInputRef.current?.click()} className="absolute bottom-4 right-4 bg-white/90 backdrop-blur-md text-[#005440] px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-white shadow-lg transition-all">
+                <CameraIcon />
+                Change cover
+              </button>
+              <input
+                hidden
+                ref={coverInputRef}
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+
+                  if (!file) return;
+
+                  setCoverFile(file);
+
+                  setProfile((prev) => ({
+                    ...prev,
+                    coverUrl: URL.createObjectURL(file),
+                  }));
+                }}
+              />
+            </div>
+
+            <div className="px-8 pb-8 relative">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
+                {/* Avatar */}
+                <div className="relative -mt-16 group flex-shrink-0">
+                  <img src={profile.avatarUrl!} alt={profile.fullName} className="w-32 h-32 rounded-full border-4 border-white object-cover shadow-xl" />
+                  <button onClick={() => avatarInputRef.current?.click()} className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-white">
+                    <CameraIcon />
+                  </button>
+                  <input
+                    hidden
+                    ref={avatarInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+
+                      if (!file) return;
+
+                      setAvatarFile(file);
+
+                      setProfile((prev) => ({
+                        ...prev,
+                        avatarUrl: URL.createObjectURL(file),
+                      }));
+                    }}
+                  />
+                </div>
+
+                {/* Status + actions */}
+                <div className="flex flex-wrap items-center gap-3 mt-6">
+                  <div className="flex items-center gap-4 bg-[#f1f4f1] px-4 py-2 rounded-xl">
+                    <div className="text-right">
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-[#3f4944]/60">Profile Status</p>
+                      <p className="text-xs font-bold text-[#005440]">{profile.isTraveling ? "Currently traveling" : "Not traveling"}</p>
+                    </div>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={profile.isTraveling}
+                        onChange={(e) =>
+                          setProfile((prev) => ({
+                            ...prev,
+                            isTraveling: e.target.checked,
+                          }))
+                        }
+                        className="sr-only peer"
+                      />
+                      <div className="w-10 h-5 bg-[#e0e3e0] rounded-full peer peer-checked:bg-[#0f6e56] peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all" />
+                    </label>
+                  </div>
+                  <button className="w-11 h-11 flex items-center justify-center rounded-xl bg-[#e5e9e5] text-[#005440] hover:bg-[#e0e3e0] transition-colors shadow-sm">
+                    <ShareIcon />
+                  </button>
+                  <button
+                    disabled={!hasChanges || saving}
+                    onClick={handleSave}
+                    className={`
+    px-6 py-2.5
+    rounded-xl
+    font-bold
+    text-sm
+    transition-all
+    ${hasChanges ? "bg-[#005440] text-white hover:bg-[#004634]" : "bg-gray-300 text-gray-500 cursor-not-allowed"}
+  `}
+                  >
+                    {saving ? "Saving..." : "Save Changes"}
+                  </button>{" "}
+                </div>
+              </div>
+
+              {/* Name + handle */}
+              <div className="mt-4">
+                <div className="flex items-center gap-2">
+                  <input
+                    value={profile.fullName}
+                    onChange={(e) =>
+                      setProfile((prev) => ({
+                        ...prev,
+                        fullName: e.target.value,
+                      }))
+                    }
+                    className="
+    text-3xl
+    font-extrabold
+    bg-transparent
+    border-b-2
+    border-transparent
+    focus:border-[#005440]
+    outline-none
+    w-full
+    max-w-md
+  "
+                  />
+                  <span className="text-[#005440]">
+                    <VerifiedIcon filled={true} />
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 mt-3 text-sm text-[#3f4944]/60">
+                  <CalendarIcon /> Member since{" "}
+                  {new Date(profile.createdAt).toLocaleDateString("en-US", {
+                    month: "long",
+                    year: "numeric",
+                  })}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Stats */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-5">
+            {[
+              { label: "Trips", value: "6" },
+              { label: "Avg Rating", value: "4.8", star: true },
+              { label: "Buddies", value: "9" },
+              { label: "Active", value: "3" },
+            ].map((stat) => (
+              <div key={stat.label} className={`bg-white p-5 rounded-2xl border border-[#bec9c3]/15 flex flex-col items-center text-center ${stat.star ? "border-b-4 border-b-[#005440]" : ""}`}>
+                <div className="flex items-baseline gap-1">
+                  <p className="text-2xl font-black text-[#005440]">{stat.value}</p>
+                  {stat.star && <StarFull />}
+                </div>
+                <p className="text-[11px] text-[#3f4944]/70 font-bold uppercase tracking-wider mt-1">{stat.label}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Main Management Area */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Left column: Bio + Reviews */}
+            <div className="lg:col-span-2 space-y-8">
+              {/* Bio */}
+              <div className="bg-white p-8 rounded-3xl border border-[#bec9c3]/15">
+                <div className="flex justify-between items-center mb-6">
+                  <h3 className="text-xl font-bold flex items-center gap-2 font-headline">
+                    <span className="text-[#005440]">
+                      <DescriptionIcon />
+                    </span>{" "}
+                    About Me
+                  </h3>
+                  <button onClick={() => setEditingBio((v) => !v)} className="flex items-center gap-2 text-[#005440] font-bold text-sm hover:underline">
+                    <EditIcon /> {editingBio ? "Done" : "Edit"}
+                  </button>
+                </div>
+                <div className="bg-[#f1f4f1]/50 rounded-xl p-6 border-2 border-dashed border-[#bec9c3]/30">
+                  <textarea
+                    value={profile.bio ?? ""}
+                    onChange={(e) =>
+                      setProfile((prev) => ({
+                        ...prev,
+                        bio: e.target.value,
+                      }))
+                    }
+                    readOnly={!editingBio}
+                    placeholder="Tell the world about your travel style, favorite destinations, and what makes you a great buddy..."
+                    className={`w-full bg-transparent border-none focus:ring-0 outline-none leading-relaxed resize-none p-0 h-32 text-sm ${editingBio ? "text-[#181d1a]" : "text-[#3f4944] cursor-default"}`}
+                  />
+                </div>
+              </div>
+
+              {/* Reviews */}
+              <div className="bg-white p-8 rounded-3xl border border-[#bec9c3]/15">
+                <div className="flex justify-between items-center mb-8">
+                  <h3 className="text-xl font-bold flex items-center gap-2 font-headline">
+                    <span className="text-[#005440]">
+                      <ReviewsIcon />
+                    </span>{" "}
+                    Traveler Reviews
+                  </h3>
+                  <div className="flex items-center gap-2 bg-[#c9eadb] px-3 py-1 rounded-full">
+                    <StarFull />
+                    <span className="text-sm font-bold text-[#4d6b5f]">4.8 (12)</span>
+                  </div>
+                </div>
+
+                <div className="space-y-6">
+                  {[
+                    {
+                      name: "Sarah Jenkins",
+                      trip: "Bali Trip • Oct 2024",
+                      rating: 5,
+                      text: "Rohan is an amazing photographer and knows all the best sunrise spots. Super reliable and easy to hang out with!",
+                      avatar: "https://lh3.googleusercontent.com/aida-public/AB6AXuDtGUyZkDTkfAjrJ677-VR524rmezNLzlsV_zyq5WI-Ub5Q_nd31Hu3J_UYIY0PtTUpCW5uxcJ9rGMX-K66GkS7cK0XSU4yBNmf_dDvg6e2vGQxFSXjUR-Tv9VT1e4MpjAGfjhfZfLwRaFrbqGR6IyeEu394_8dT03tF9RJ2ocSZf_WkEioOTC-8mEWp3qXCVwWv1hYLQ9Pd8cr_NZArpyhquYUkauxe6HigdxbOcaG6X-odtdMfrSDAD8Xvq6JaQGLsBBJTrgaqvo",
+                    },
+                    {
+                      name: "Marcus Chen",
+                      trip: "Vietnam Loop • May 2024",
+                      rating: 4,
+                      text: "Great buddy for long motorcycle rides. Always has a positive attitude even when things get tough on the road.",
+                      avatar: "https://lh3.googleusercontent.com/aida-public/AB6AXuAYxRmmmrA_fvIW0wEiZwk41qg6_xvSTW3So-bJzxwmsV4OiuUotX4d9q6PX3VwImgh3sGgaq-SvYFDFznKfQJ4SGuaeaTKULzysTRvQDW5CXJlzVvATUBlZer6liD2kr_ludkRdhDpXnEsFxL14NiLkwEOa26Vut5hMSlF_W2S5cGycJmnQ8AypL_PCdxWa6krHMajThTGvwyE5CyyDV1d6WSFVHHv8f9A-WkMZKH47_Yyc7uPJYk_mWZ2Bjcp_0UcPb7CWwIKyKY",
+                    },
+                  ].map((review, i) => (
+                    <div key={review.name} className={i === 0 ? "pb-6 border-b border-[#bec9c3]/10" : ""}>
+                      <div className="flex justify-between mb-3">
+                        <div className="flex items-center gap-3">
+                          <img src={review.avatar} alt={review.name} className="w-10 h-10 rounded-full object-cover" />
+                          <div>
+                            <p className="text-sm font-bold">{review.name}</p>
+                            <p className="text-[10px] text-[#3f4944]/60 font-medium uppercase tracking-wider">{review.trip}</p>
+                          </div>
+                        </div>
+                        <Stars count={review.rating} />
+                      </div>
+                      <p className="text-sm text-[#3f4944] leading-relaxed">{review.text}</p>
+                    </div>
+                  ))}
+                </div>
+
+                <button className="w-full mt-8 py-3 rounded-xl bg-[#f1f4f1] text-[#005440] font-bold text-sm hover:bg-[#e5e9e5] transition-colors">View All 12 Reviews</button>
+              </div>
+            </div>
+
+            {/* Right column: Preferences */}
+            <div className="space-y-8">
+              <div className="bg-white p-8 rounded-3xl border border-[#bec9c3]/15">
+                <h3 className="text-xl font-bold flex items-center gap-2 mb-8 font-headline">
+                  <span className="text-[#005440]">
+                    <TuneSmallIcon />
+                  </span>{" "}
+                  Preferences
+                </h3>
+                <TagGroup
+                  label="Languages"
+                  tags={profile.languages}
+                  onRemove={(tag: string) =>
+                    setProfile((prev) => ({
+                      ...prev,
+                      languages: prev.languages.filter((item) => item !== tag),
+                    }))
+                  }
+                  onAdd={(tag: string) =>
+                    setProfile((prev) => ({
+                      ...prev,
+                      languages: [...prev.languages, tag],
+                    }))
+                  }
+                />{" "}
+                <TagGroup
+                  label="Skills"
+                  tags={profile.skills}
+                  onRemove={(tag) =>
+                    setProfile((prev) => ({
+                      ...prev,
+                      skills: prev.skills.filter((item) => item !== tag),
+                    }))
+                  }
+                  onAdd={(tag) =>
+                    setProfile((prev) => ({
+                      ...prev,
+                      skills: [...prev.skills, tag],
+                    }))
+                  }
+                />{" "}
+                <TagGroup
+                  label="Interests"
+                  tags={profile.interests}
+                  onRemove={(tag) =>
+                    setProfile((prev) => ({
+                      ...prev,
+                      interests: prev.interests.filter((item) => item !== tag),
+                    }))
+                  }
+                  onAdd={(tag) =>
+                    setProfile((prev) => ({
+                      ...prev,
+                      interests: [...prev.interests, tag],
+                    }))
+                  }
+                />{" "}
+                <div className="mb-8">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-[#3f4944]/60 mb-4">Travel Personality</p>
+
+                  <div className="grid grid-cols-3 gap-2">
+                    {personalityOptions.map((option) => (
+                      <button
+                        key={option.value}
+                        type="button"
+                        onClick={() =>
+                          setProfile((prev) => ({
+                            ...prev,
+                            travelPersonality: option.value,
+                          }))
+                        }
+                        className={`
+          py-3
+          rounded-xl
+          text-[12px]
+          font-semibold
+          text-[#3f4944]
+          transition-all
+          ${profile.travelPersonality === option.value ? "bg-[#c9eadb]" : "bg-[#f1f4f1] text-[#3f4944] hover:bg-[#e4ebe7]"}
+        `}
+                      >
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Trust Card */}
+              <div className="bg-[#005440] p-8 rounded-3xl text-white relative overflow-hidden">
+                <div className="relative z-10">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center">
+                      <VerifiedUserIcon />
+                    </div>
+                    <h4 className="font-black text-lg font-headline">Trust Level: Gold</h4>
+                  </div>
+                  <p className="text-white/80 text-sm leading-relaxed mb-6">Your identity, phone, and email are fully verified. This badge helps you match with top-rated buddies.</p>
+                  <button className="w-full py-2.5 rounded-xl bg-white text-[#005440] font-bold text-xs hover:bg-opacity-90 transition-all">Manage Verification</button>
+                </div>
+                <svg viewBox="0 0 24 24" className="absolute -bottom-10 -right-10 w-[200px] h-[200px] fill-current text-white/5 pointer-events-none rotate-12">
+                  <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z" />
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  );
 }

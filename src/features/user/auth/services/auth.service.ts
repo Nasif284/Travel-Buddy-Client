@@ -32,7 +32,7 @@ export const authService = {
     return res.data;
   },
   resetPassword: async (data: ResetPassword) => {
-    const res = await api.post("/auth/password/forgot/reset", data);
+    const res = await api.post("/auth/password/reset", data);
     return res.data;
   },
   logout: async () => {

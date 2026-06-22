@@ -1,4 +1,4 @@
-import { userApi as api } from "../lib/api-client"
+import { userApi as api } from "../../../../lib/api-client"
 
 export const usersServices = {
   getUsersForCards: async (params: { page: number; limit: number }) => {
@@ -9,8 +9,12 @@ export const usersServices = {
     const res = await api.get("/users/nearby", { params });
     return res.data;
   },
-  getTravelerProfile: async (id:string) => {
+  getTravelerProfile: async (id: string) => {
     const res = await api.get(`/users/${id}`);
+    return res.data;
+  },
+  getMe: async () => {
+    const res = await api.get(`/users/me`);
     return res.data;
   },
 };

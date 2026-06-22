@@ -3,14 +3,14 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
-  const refreshToken = request.cookies.get("accessToken")?.value;
+  const refreshToken = request.cookies.get("refreshToken")?.value;
 
   const pathname = request.nextUrl.pathname;
 
   const protectedRoutes = ["/"];
   const authPaths = ["/login", "/signup"];
   const adminAuthPath = "/admin/login";
-  const adminProtected = ["/admin/users"];
+  const adminProtected = ["/admin/users","/admin"];
 
   const isAuth = authPaths.includes(pathname);
   const isProtectedRoute = protectedRoutes.includes(pathname);

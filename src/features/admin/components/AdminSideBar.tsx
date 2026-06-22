@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAdminLogout } from "../features/auth/hooks/admin-auth.hooks";
 import { useAuthStore } from "@/src/store/auth.store";
-import { Icons } from "@/src/assets";
+import { GroupIcon, LogoutIcon } from "@/src/assets/icons";
 
 type NavItem = {
   href: string;
@@ -14,7 +14,7 @@ type NavItem = {
 
 const navItems: NavItem[] = [
   // { href: "/admin/dashboard", label: "Dashboard", icon: <Icons.DashboardIcon /> },
-  { href: "/admin/users", label: "All Users", icon: <Icons.GroupIcon /> },
+  { href: "/admin/users", label: "All Users", icon: <GroupIcon /> },
   // { href: "/admin/trips", label: "All Trips", icon: <Icons.ExploreIcon /> },
   // { href: "/admin/reports", label: "Reports", icon: <Icons.AssessmentIcon /> },
   // { href: "/admin/analytics", label: "Analytics", icon: <Icons.MonitoringIcon /> },
@@ -63,7 +63,7 @@ export default function AdminSidebar() {
       <div className="mt-auto px-3">
         <button onClick={handleLogout} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#ba1a1a] hover:bg-[#ba1a1a]/10 text-sm font-semibold tracking-tight transition-all duration-200 group">
           <span className="group-hover:translate-x-0.5 transition-transform">
-            <Icons.LogoutIcon />
+            <LogoutIcon />
           </span>
           <span>Sign out</span>
         </button>

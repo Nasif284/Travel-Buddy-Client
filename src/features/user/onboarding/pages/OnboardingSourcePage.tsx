@@ -15,7 +15,7 @@ export default function ReferralSourcePage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-6 relative" style={{ backgroundColor: "#F5F5F3" }}>
-      <main className="w-full max-w-[600px] bg-white rounded-2xl p-8 md:p-12 flex flex-col items-center shadow-sm z-10">
+      <main className="w-full max-w-150 bg-white rounded-2xl p-8 md:p-12 flex flex-col items-center shadow-sm z-10">
         <div className="mb-8 flex flex-col items-center w-full">
           <div className="mb-6">
             <span className="font-headline text-xl font-black text-[#005440] tracking-tight">Travel Buddy</span>
@@ -31,13 +31,13 @@ export default function ReferralSourcePage() {
           <p className="text-[#3f4944] text-base text-center max-w-md">This helps us understand where our community is growing.</p>
         </div>
 
-        <SourceOptions onSelect={(label:string) => setSelected(label)} selected={selected} />
+        <SourceOptions onSelect={(label: string) => setSelected(label)} selected={selected} />
 
-        <button onClick={handleContinue} disabled={!selected} className="w-full h-12 bg-[#0f6e56] hover:bg-[#005440] text-white font-bold rounded-xl transition-all active:scale-[0.98] shadow-sm flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
-          Continue
-          <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24" aria-hidden="true">
+        <button onClick={handleContinue} disabled={!selected || setSource.isPending} className={`w-full h-12 ${setSource.isPending ? "bg-[#addbd0] text-white" : "bg-[#0f6e56] text-white"}  hover:bg-[#005440]  font-bold rounded-xl transition-all active:scale-[0.98] shadow-sm flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed`}>
+          {setSource.isPending ? "Submitting..." : <>Continue  <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24" aria-hidden="true">
             <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z" />
           </svg>
+          </>}
         </button>
       </main>
 

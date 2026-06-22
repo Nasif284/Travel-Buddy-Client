@@ -1,10 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Icons } from "../assets";
-import { UserWithDetails } from "../Interfaces/users.interface";
-import Image from "next/image";
+import { UserWithDetails } from "../../../../Interfaces/users.interface";
 import Link from "next/link";
+import { LocationIcon } from "@/src/assets/icons";
 
 export default function TravelerCard({ traveler, isNearBy = false }: { readonly traveler: UserWithDetails; readonly isNearBy: boolean }) {
   const [requestSent, setRequestSent] = useState(false);
@@ -26,7 +25,7 @@ export default function TravelerCard({ traveler, isNearBy = false }: { readonly 
             {traveler.fullName}, {traveler.age}
           </h2>
           <p className="text-xs text-[#3f4944] flex items-center gap-1 mt-0.5">
-            <Icons.LocationIcon />
+            <LocationIcon />
             {traveler.state}, {traveler.country}
           </p>
         </div>
@@ -48,14 +47,14 @@ export default function TravelerCard({ traveler, isNearBy = false }: { readonly 
         </div>
 
         <div className="mt-auto flex gap-3">
-          <Link href={`/profile/${traveler.id}`} className="flex-1 py-3 text-sm font-bold text-[#005440] hover:bg-[#e5e9e5] rounded-xl transition-colors">View profile</Link>
+          <Link href={`/profile/${traveler.id}`} className="flex-1 items-center text-center py-3 text-sm font-bold text-[#005440] hover:bg-[#e5e9e5] rounded-xl transition-colors">View profile</Link>
           {requestSent ? (
             <button disabled className="flex-1 px-2  text-[12px] font-bold bg-[#e0e3e0] text-[#a4a2a2] cursor-not-allowed rounded-xl flex items-center justify-center">
               Request sent
             </button>
           ) : (
             <button onClick={() => setRequestSent(true)} className="flex-1 text-[12px] font-bold bg-[#0f6e56] text-white rounded-xl hover:bg-[#005440] transition-all active:scale-95">
-              Send request
+              Message
             </button>
           )}
         </div>

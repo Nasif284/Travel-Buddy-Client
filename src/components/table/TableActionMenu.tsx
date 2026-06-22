@@ -1,8 +1,8 @@
 "use client";
 
+import { MoreVertIcon } from "@/src/assets/icons";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { Icons } from "../../assets/icons";
 
 export interface ActionMenuItem {
   label: string;
@@ -115,7 +115,7 @@ export function TableActionMenu({ rowId, openId, onToggle, items }: TableActionM
         aria-expanded={isOpen}
         aria-haspopup="true"
       >
-        <Icons.MoreVertIcon />
+        <MoreVertIcon />
       </button>
 
       {dropdown}

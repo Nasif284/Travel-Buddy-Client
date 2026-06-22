@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { NEARBY_TRAVELERS } from "../Data/data";
-import { Icons } from "../assets";
+import { LocationIcon, StarFull, StarHalf } from "../assets/icons";
 
 export default function RightSidebar() {
   return (
@@ -13,11 +13,11 @@ export default function RightSidebar() {
             <span className="text-[#005440] font-bold">4.8/5</span>
           </div>
           <div className="flex gap-1 mb-3">
-            <Icons.StarFull />
-            <Icons.StarFull />
-            <Icons.StarFull />
-            <Icons.StarFull />
-            <Icons.StarHalf />
+            <StarFull />
+            <StarFull />
+            <StarFull />
+            <StarFull />
+            <StarHalf />
           </div>
           <p className="text-xs text-[#3f4944]">Based on 12 verified reviews</p>
         </div>
@@ -53,7 +53,7 @@ export default function RightSidebar() {
               <div>
                 <p className="font-semibold text-sm text-[#181d1a] group-hover:text-[#005440] transition-colors">{traveler.name}</p>
                 <p className="text-xs text-[#3f4944] flex items-center gap-1">
-                  <Icons.LocationIcon />
+                  <LocationIcon />
                   {traveler.distance}
                 </p>
               </div>

@@ -1,37 +1,36 @@
-"use client";
-import { Icons } from "@/src/assets";
+import { appStore, blog, friends, other, search, social } from "@/src/assets/icons";
 import { Option } from "../interfaces/interfaces";
 
 const options: Option[] = [
   {
     id: "friends",
     label: "Friends or Family",
-    icon: Icons.friends,
+    icon: friends,
   },
   {
     id: "social",
     label: "Social Media",
-    icon: Icons.social,
+    icon: social,
   },
   {
     id: "search",
     label: "Search Engine",
-    icon: Icons.search,
+    icon: search,
   },
   {
     id: "blog",
     label: "Travel Blog or Article",
-    icon: Icons.blog,
+    icon: blog,
   },
   {
     id: "appstore",
     label: "App Store",
-    icon: Icons.appStore,
+    icon: appStore,
   },
   {
     id: "other",
     label: "other",
-    icon: Icons.other,
+    icon: other,
   },
 ];
 
