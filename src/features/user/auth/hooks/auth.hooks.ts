@@ -2,23 +2,41 @@
 import { authService } from "@/src/features/user/auth/services/auth.service";
 import { LoginInput, RegisterInput, ResetPassword, SendOtp, verifyEmail, VerifyOtp } from "../interfaces/auth.interfaces";
 import { useAuthStore } from "@/src/store/auth.store";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { ApiError } from "@/src/types/types";
 
-
-
 export function useLogin() {
   const setUser = useAuthStore((state) => state.setUser);
   const router = useRouter();
+  const sendOtp = useSendOtp();
   return useMutation({
     mutationFn: (data: LoginInput) => authService.login(data),
     onSuccess: (res) => {
-      setUser(res.data);
+      setUser(res.data.user);
       toast.success(res.message);
-      router.push("/");
+      if (!res.data.isVerified) {
+        sendOtp.mutate({ email: res.data.user.email as string, purpose: "email_verify" });
+        router.replace("/verify");
+      } else if (!res.data.onboardingCompleted) {
+        if (res.data.onboardingStep == 1) {
+          router.push("/onboarding/source");
+        } else if (res.data.onboardingStep == 2) {
+          router.push("/onboarding/profile");
+        } else {
+          router.push("/onboarding/travel-style");
+        }
+      } else {
+        const redirect = sessionStorage.getItem("postLoginRedirect");
+        if (redirect) {
+          sessionStorage.removeItem("postLoginRedirect");
+          router.replace(redirect);
+        } else {
+          router.replace("/");
+        }
+      }
     },
     onError: (error: AxiosError<ApiError>) => {
       toast.error(error.response?.data?.error?.message || "Something went wrong");
@@ -32,9 +50,27 @@ export function useGoogleAuth() {
   return useMutation({
     mutationFn: (token: string) => authService.googleAuth(token),
     onSuccess: (res) => {
-      setUser(res.data);
+      setUser(res.data.user);
       toast.success(res.message);
-      router.push("/");
+      if (res.data.isNew) {
+        router.push("/onboarding/source");
+      } else if (!res.data.onboardingCompleted) {
+        if (res.data.onboardingStep == 1) {
+          router.push("/onboarding/source");
+        } else if (res.data.onboardingStep == 2) {
+          router.push("/onboarding/profile");
+        } else {
+          router.push("/onboarding/travel-style");
+        }
+      } else {
+        const redirect = sessionStorage.getItem("postLoginRedirect");
+        if (redirect) {
+          sessionStorage.removeItem("postLoginRedirect");
+          router.replace(redirect);
+        } else {
+          router.replace("/");
+        }
+      }
     },
     onError: (error: AxiosError<ApiError>) => {
       toast.error(error.response?.data?.error?.message || "Something went wrong");
@@ -129,15 +165,26 @@ export function useResetPassword() {
 }
 
 export function useForgotPasswordOtp() {
-    const router = useRouter();
-    return useMutation({
-      mutationFn: (data: { email: string }) => authService.forgotPassword(data),
-      onSuccess: (res) => {
-        toast.success(res.message);
-        router.push("/forgot-password/verify");
-      },
-      onError: (error: AxiosError<ApiError>) => {
-        toast.error(error.response?.data?.error?.message || "Something went wrong");
-      },
-    });
+  const router = useRouter();
+  return useMutation({
+    mutationFn: (data: { email: string }) => authService.forgotPassword(data),
+    onSuccess: (res) => {
+      toast.success(res.message);
+      router.push("/forgot-password/verify");
+    },
+    onError: (error: AxiosError<ApiError>) => {
+      toast.error(error.response?.data?.error?.message || "Something went wrong");
+    },
+  });
+}
+
+export function useAuthMe() {
+  return useQuery({
+    queryKey: ["me"],
+    queryFn: () => authService.authMe(),
+    retry: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    staleTime: Infinity,
+  });
 }

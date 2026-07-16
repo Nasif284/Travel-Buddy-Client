@@ -29,19 +29,19 @@ export default function MatchSuggestionCard({ traveler, isNearBy = false, match 
           </div>
         </div>
 
-        <div className="pt-10 px-6 pb-6 flex flex-col grow">
+        <div className="pt-10 px-4 pb-6 flex flex-col grow">
           <div className="mb-3">
             <h2 className="text-xl font-bold text-[#181d1a]">
               {traveler.fullName}, {traveler.age}
             </h2>
-            <p className="text-xs text-[#3f4944] flex items-center gap-1 mt-0.5">
+            <p className="text-[11px] text-[#3f4944] flex items-center gap-1 mt-0.5">
               <LocationIcon />
               {traveler.state}, {traveler.country}
             </p>
           </div>
 
-          <div className="mb-2">
-            <span className="inline-block px-3 py-1 bg-[#c9eadb] text-[#4d6b5f] rounded-full text-xs font-bold mb-2">
+          <div className="mb-1">
+            <span className="inline-block px-3 py-1 bg-[#c9eadb] text-[#4d6b5f] rounded-full text-[10px] font-bold mb-2">
               {match.destination} •{" "}
               {new Date(match.dateFrom).toLocaleDateString("en-US", {
                 day: "2-digit",
@@ -60,16 +60,16 @@ export default function MatchSuggestionCard({ traveler, isNearBy = false, match 
           <span className="text-[10px] uppercase font-bold text-[#2c2c2c] py-1 px-2 bg-[#c8f4c8] rounded-lg">{traveler.travelPersonality}</span>
         </div> */}
 
-          <div className="flex flex-wrap gap-2 mb-6">
+          <div className="flex flex-wrap gap-2 mb-3">
             {traveler.interests.map((tag) => (
-              <span key={tag} className="text-[10px] uppercase font-bold text-[#6f7a74] py-1 px-2 bg-[#ebefeb] rounded-lg">
+              <span key={tag} className="text-[9px] uppercase font-bold text-[#6f7a74] py-1 px-2 bg-[#ebefeb] rounded-lg">
                 {tag}
               </span>
             ))}
           </div>
 
           <div className="mt-auto flex gap-3">
-            <Link href={`/matches/${match.id}`} className="flex-1 items-center text-center py-3 text-sm font-bold text-[#005440] hover:bg-[#e5e9e5] rounded-xl transition-colors">
+            <Link href={`/matches/${match.id}`} className="flex-1 items-center text-center py-3 text-[12px] font-bold text-[#005440] hover:bg-[#e5e9e5] rounded-xl transition-colors">
               View profile
             </Link>
             {requestSent ? (

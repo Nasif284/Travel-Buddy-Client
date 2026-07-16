@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useTravelerProfile } from "@/src/features/user/matches-connections/hooks/users.hooks";
 import { useParams } from "next/navigation";
-import { useGetProfileUpcomingTrips } from "@/src/hooks/api/trip.hooks";
+import { useGetProfileUpcomingTrips } from "@/src/features/user/trips/hooks/trip.hooks";
 import { TripCardData } from "../../matches-connections/interfaces/profile-listing.interface";
 import { CalendarIcon, ChatIcon, LocationIcon, MapIcon, PersonIcon } from "@/src/assets/icons";
 type Tab = "about" | "trips" | "reviews";

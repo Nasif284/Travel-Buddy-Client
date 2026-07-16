@@ -4,7 +4,6 @@ import { HttpCodes } from "../utils/constants/HttpCodes.containts";
 export const userApi = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
   withCredentials: true,
-
 });
 
 userApi.interceptors.response.use(
@@ -12,7 +11,7 @@ userApi.interceptors.response.use(
 
   async (error) => {
     const originalRequest = error.config;
-
+    console.log("satusCode:" + error.response?.status);
     if (error.response?.status === HttpCodes.UNAUTHORIZED && !originalRequest._retry) {
       originalRequest._retry = true;
 
@@ -27,7 +26,8 @@ userApi.interceptors.response.use(
 
         return userApi(originalRequest);
       } catch {
-        window.location.href = "/login";
+        const redirect = window.location.pathname + window.location.search;
+        window.location.href = `/login?redirect=${encodeURIComponent(redirect)}`;
       }
     }
 

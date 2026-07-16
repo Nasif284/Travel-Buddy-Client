@@ -10,6 +10,10 @@ export const connectionServices = {
     const res = await api.get("/connection/requests/incoming");
     return res.data;
   },
+  getSentRequests: async () => {
+    const res = await api.get("/connection/requests/sent");
+    return res.data;
+  },
   acceptRequest: async (id: string) => {
     const res = await api.patch(`/connection/accept/${id}`);
     return res.data;
@@ -18,16 +22,20 @@ export const connectionServices = {
     const res = await api.patch(`/connection/reject/${id}`);
     return res.data;
   },
-  getConnections: async () => {
-    const res = await api.get("/connection")
-    return res.data
+  withdrawRequest: async (id: string) => {
+    const res = await api.patch(`/connection/withdraw/${id}`);
+    return res.data;
   },
-  disconnect: async (id:string) => {
-    const res = await api.patch(`/connection/disconnect/${id}`)
-    return res.data
+  getConnections: async () => {
+    const res = await api.get("/connection");
+    return res.data;
+  },
+  disconnect: async (id: string) => {
+    const res = await api.patch(`/connection/disconnect/${id}`);
+    return res.data;
   },
   getAllRequests: async () => {
-       const res = await api.get("/connection/requests");
-       return res.data;
-  }
+    const res = await api.get("/connection/requests");
+    return res.data;
+  },
 };

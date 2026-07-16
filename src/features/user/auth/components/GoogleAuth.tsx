@@ -1,14 +1,19 @@
 "use client";
+import { useSearchParams } from "next/navigation";
 import { useGoogleAuth } from "../hooks/auth.hooks";
 import { useGoogleLogin } from "@react-oauth/google";
 
 const GoogleAuth = () => {
   const googleAuth = useGoogleAuth();
+  const params = useSearchParams();
+  const redirect = params.get("redirect");
   const googleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
+      if (redirect) {
+        sessionStorage.setItem("postLoginRedirect", redirect);
+      }
       googleAuth.mutate(tokenResponse.access_token);
     },
-
     onError: () => {
       console.log("Google Login Failed");
     },

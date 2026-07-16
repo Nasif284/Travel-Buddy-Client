@@ -8,10 +8,11 @@ export function useGetUsersForCards(params: { page: number; limit: number }) {
   });
 }
 
-export function useGetNearbyUsers(params: { page: number; limit: number }) {
+export function useGetNearbyUsers(params: { page: number; limit: number },enabled:boolean) {
   return useQuery({
     queryKey: ["nearby_users", params],
     queryFn: () => usersServices.getNearbyUsers(params),
+    enabled
   });
 }
 

@@ -5,11 +5,12 @@ import PasswordField from "../components/PasswordField";
 import { useRegister } from "@/src/features/user/auth/hooks/auth.hooks";
 import { RegisterFormData, RegisterSchema } from "../validators/signup.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-
+import { useSearchParams } from "next/navigation";
 
 const SignUpPage = () => {
   const registerMutation = useRegister();
-
+  const params = useSearchParams();
+  const redirect = params.get("redirect");
   const {
     register,
     handleSubmit,
@@ -28,18 +29,18 @@ const SignUpPage = () => {
   const password = watch("password");
 
   const onSubmit = (data: RegisterFormData) => {
+    if (redirect) {
+      sessionStorage.setItem("postLoginRedirect", redirect);
+    }
     registerMutation.mutate({
       fullName: data.fullName,
-
       email: data.email,
-
       password: data.password,
     });
   };
 
   return (
     <form className="space-y-5" onSubmit={handleSubmit(onSubmit)} noValidate>
-
       <div>
         <label htmlFor="fullName" className="block text-sm font-semibold mb-2 text-[#3f4944]">
           Full name
@@ -78,23 +79,10 @@ const SignUpPage = () => {
         {errors.email && <p className="text-sm text-red-500 mt-1">{errors.email.message}</p>}
       </div>
 
-
       <div className="grid grid-cols-2 gap-4">
-        <PasswordField<RegisterFormData>
-          id="password"
-          label="Password"
-          placeholder="••••••••"
-          register={register}
-          error={errors.password?.message}
-        />
+        <PasswordField<RegisterFormData> id="password" label="Password" placeholder="••••••••" register={register} error={errors.password?.message} />
 
-        <PasswordField<RegisterFormData>
-          id="confirmPassword"
-          label="Confirm password"
-          placeholder="••••••••"
-          register={register}
-          error={errors.confirmPassword?.message}
-        />
+        <PasswordField<RegisterFormData> id="confirmPassword" label="Confirm password" placeholder="••••••••" register={register} error={errors.confirmPassword?.message} />
       </div>
 
       <div className="pt-4">

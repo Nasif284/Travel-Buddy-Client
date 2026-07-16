@@ -50,4 +50,8 @@ export const authService = {
     );
     return res.data;
   },
+  authMe: async () => {
+    const res = await api.get("/auth/me")
+    return res.data
+  }
 };

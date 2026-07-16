@@ -43,9 +43,12 @@ export const onboardingService = {
     );
     return res.data;
   },
-  createTripPlan: async (data: TripPlanData) => {
-    const res = await api.post("/trip", data);
+  editOnboardingProfile: async (data: object) => {
+    const res = await api.patch("/onboarding/profile", data);
     return res.data;
   },
-  
+  editTravelStyle: async (data: TravelStyleData) => {
+    const res = await api.patch("/onboarding/travel-style", data);
+    return res.data;
+  },
 };

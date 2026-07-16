@@ -1,4 +1,5 @@
 import LeftSidebar from "@/src/components/LeftSideBar";
+import AuthProvider from "@/src/components/providers/AuthProvider";
 import TopBar from "@/src/components/TopBar";
 import React from "react";
 
@@ -8,11 +9,13 @@ const layout = ({
   children: React.ReactNode;
 }>) => {
   return (
-    <div className="bg-[#f7faf6] text-[#181d1a] min-h-screen">
-      <LeftSidebar />
-      <TopBar />
-      {children}
-    </div>
+    <AuthProvider>
+      <div className="bg-[#f7faf6] text-[#181d1a] min-h-screen">
+        <LeftSidebar />
+        <TopBar />
+        {children}
+      </div>
+    </AuthProvider>
   );
 };
 

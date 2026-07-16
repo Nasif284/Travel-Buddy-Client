@@ -1,22 +1,27 @@
 "use client";
 
-import { useState } from "react";
-import { useSetTravelStyle } from "../hooks/onboarding.hooks";
-
+import { useEffect, useState } from "react";
+import { useEditTravelStyle, useSetTravelStyle } from "../hooks/onboarding.hooks";
+import { useAuthMe } from "../../auth/hooks/auth.hooks";
+import { capitalizeFirstLetter } from "@/src/utils/capitalizseFirstLetter";
+import { useGetMe } from "../../matches-connections/hooks/users.hooks";
+import Link from "next/link";
 
 type TravelStyle = "Budget" | "Backpacker" | "Luxury";
 type Interest = "Beach" | "Mountains" | "Party" | "Culture" | "Foodie" | "Hiking";
 type Personality = "Introvert" | "Ambivert" | "Extrovert";
 type MatchPref = "Men" | "Women" | "Everyone";
 
-
 export default function TravelStylePage() {
+  const { data, isLoading } = useGetMe();
+  const me = data?.data;
   const [travelStyle, setTravelStyle] = useState<TravelStyle>("Backpacker");
   const [interests, setInterests] = useState<Set<Interest>>(new Set(["Mountains", "Culture"]));
   const [personality, setPersonality] = useState<Personality>("Extrovert");
   const [matchPref, setMatchPref] = useState<MatchPref>("Everyone");
 
-  const setStyle = useSetTravelStyle()
+  const setStyle = useSetTravelStyle();
+  const editStyle = useEditTravelStyle();
   const allTravelStyles: TravelStyle[] = ["Budget", "Backpacker", "Luxury"];
   const allInterests: Interest[] = ["Beach", "Mountains", "Party", "Culture", "Foodie", "Hiking"];
   const allPersonalities: Personality[] = ["Introvert", "Ambivert", "Extrovert"];
@@ -29,17 +34,39 @@ export default function TravelStylePage() {
       return next;
     });
   }
-
+  useEffect(() => {
+    if (!me) return;
+    console.log(me);
+    setTravelStyle(capitalizeFirstLetter(me.travelType) as TravelStyle);
+    setInterests(new Set(me.interests.map((i) => capitalizeFirstLetter(i)) as Interest[]));
+    setPersonality(capitalizeFirstLetter(me.travelPersonality) as Personality);
+    setMatchPref(capitalizeFirstLetter(me.matchWith) as MatchPref);
+  }, [me]);
   function handleContinue() {
-    const data = { travelType:travelStyle.toLowerCase(), interests: [...interests], travelPersonality: personality.toLowerCase(), matchWith: matchPref.toLowerCase() };
-    console.log("Form data:", data);
-    setStyle.mutate(data)
+    const data = { travelType: travelStyle.toLowerCase(), interests: [...interests], travelPersonality: personality.toLowerCase(), matchWith: matchPref.toLowerCase() };
+    if (me.onboardingCompleted) {
+      editStyle.mutate(data);
+    } else {
+      setStyle.mutate(data);
+    }
     // router.push("/onboarding/travel-plan");
   }
 
   const activePill = "bg-[#c9eadb] text-[#4d6b5f] border-[#c9eadb]";
   const inactivePill = "border-[#bec9c3] text-[#3f4944] hover:border-[#0f6e56] hover:text-[#0f6e56]";
+  if (isLoading) {
+    return (
+      <main className="flex-grow flex flex-col items-center justify-start py-12 px-4 md:py-16">
+        <div className="max-w-[640px] w-full bg-white p-8 md:p-14 rounded-2xl border border-[#bec9c3]/10 shadow-sm">
+          <h2>Loading...</h2>
+        </div>
 
+        <div className="mt-12 mb-8 text-center">
+          <p className="text-[#3f4944] font-bold text-sm tracking-widest uppercase">Step 3 of 4</p>
+        </div>
+      </main>
+    );
+  }
   return (
     <main className="flex-grow flex flex-col items-center justify-start py-12 px-4 md:py-16">
       <div className="max-w-[640px] w-full bg-white p-8 md:p-14 rounded-2xl border border-[#bec9c3]/10 shadow-sm">
@@ -131,9 +158,51 @@ export default function TravelStylePage() {
           </fieldset>
 
           {/* Actions */}
-          <div className="flex items-center justify-end pt-8 border-t border-[#bec9c3]/10">
-            <button type="button" onClick={handleContinue} className={`w-[160px] h-[48px] ${setStyle.isPending ? "bg-[#addbd0]" : "bg-[#0f6e56]"}  text-white font-bold rounded-md hover:opacity-90 active:scale-95 transition-all shadow-md`}>
-              {setStyle.isPending ? "Submitting..." : "Continue"}
+          <div className="flex items-center justify-between pt-8 border-t border-[#bec9c3]/10">
+            <Link
+              href="/onboarding/profile"
+              className="
+      inline-flex items-center justify-center gap-2
+      text-[#3f4944]
+      font-semibold
+      hover:text-[#0f6e56]
+      transition-all
+      active:scale-95
+    "
+            >
+              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M15 18l-6-6 6-6" />
+              </svg>
+              Back
+            </Link>
+
+            <button
+              type="button"
+              onClick={handleContinue}
+              disabled={setStyle.isPending}
+              className={`
+      inline-flex items-center justify-center gap-2
+      w-[160px] h-12
+      rounded-xl
+      font-semibold
+      text-white
+      shadow-md
+      transition-all
+      active:scale-95
+      ${setStyle.isPending ? "bg-[#addbd0] cursor-not-allowed" : "bg-[#0f6e56] hover:bg-[#005440]"}
+    `}
+            >
+              {setStyle.isPending ? (
+                "Submitting..."
+              ) : (
+                <>
+                  Continue
+                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M5 12h14" />
+                    <path d="M13 5l7 7-7 7" />
+                  </svg>
+                </>
+              )}
             </button>
           </div>
         </div>

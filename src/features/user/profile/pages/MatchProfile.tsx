@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { BuddyRequestModal } from "../components/BuddyRequestModal";
 import { useGetMatchProfile } from "@/src/features/user/matches-connections/hooks/matches.hooks";
-import { useGetProfileUpcomingTrips } from "@/src/hooks/api/trip.hooks";
+import { useGetProfileUpcomingTrips } from "@/src/features/user/trips/hooks/trip.hooks";
 import { useGetAllRequests, useGetConnections, useGetIncomingRequests, useSendConnectionRequest } from "@/src/features/user/matches-connections/hooks/connection.hooks";
 import { TripCardData } from "../../matches-connections/interfaces/profile-listing.interface";
 import InfoCard from "../components/InfoCard";
@@ -45,7 +45,7 @@ export default function MatcProfile() {
           <div className="max-w-[800px] mx-auto pt-24 px-4 sm:px-6">
             <section className="relative mt-4">
               <div className="w-full h-[220px] rounded-xl overflow-hidden shadow-sm">
-                <img src={user.coverUrl} alt="Alex Rivera's cover photo" className="w-full h-full object-cover" />
+                <img src={user.coverUrl!} alt="Alex Rivera's cover photo" className="w-full h-full object-cover" />
               </div>
 
               <div className="absolute top-4 right-4 flex gap-2">
@@ -61,15 +61,16 @@ export default function MatcProfile() {
 
               <div className="flex flex-col sm:flex-row items-end gap-4 px-6 -mt-12 relative z-10">
                 <div className="w-32 h-32 rounded-full border-4 border-[#f7faf6] shadow-md overflow-hidden bg-white flex-shrink-0">
-                  <img src={user.avatarUrl} alt="Alex Rivera" className="w-full h-full object-cover" />
+                  <img src={user.avatarUrl!} alt="Alex Rivera" className="w-full h-full object-cover" />
                 </div>
                 <div className="flex-1 pb-2 w-full">
                   <div className="flex items-center gap-3 flex-wrap">
                     <h1 className="text-3xl font-black tracking-tight text-[#181d1a] font-headline">
                       {user.fullName}, {user.age}
                     </h1>
-                    <span className="bg-[#c9eadb] text-[#4d6b5f] text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider flex items-center gap-1">
-                      <SparkleIcon /> {match.totalPoints} % match
+                    <span className="bg-[#c9eadb] text-[#4d6b5f] text-xs font-bold px-3 py-1 rounded-full
+                     tracking-wider flex items-center gap-1">
+                      <SparkleIcon /> {match.totalPoints}% Match
                     </span>
                   </div>
                   <div className="flex items-center gap-4 mt-1 text-[#4d6b5f] font-medium text-sm flex-wrap">

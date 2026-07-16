@@ -36,6 +36,7 @@ export interface MatchDestinationDTO {
 export interface Connection {
   fullName: string;
   id: string;
+  userId: string;
   state: string;
   country: string;
   avatarUrl: string;

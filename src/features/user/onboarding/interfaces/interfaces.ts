@@ -52,7 +52,6 @@ export interface TripPlanData {
   longitude: number;
   dateFrom: Date;
   dateTo: Date;
-  preferredMembers: number;
   travelStyleCode: string;
   budgetStyle: string;
 }

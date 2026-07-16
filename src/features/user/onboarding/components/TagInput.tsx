@@ -24,7 +24,7 @@ export function TagInput({ value, placeholder, onChange }: TagInputProps) {
   const handleKey = (e: KeyboardEvent<HTMLInputElement>) => {
     if ((e.key === "Enter" || e.key === ",") && inputVal.trim()) {
       e.preventDefault();
-      addTag(inputVal);
+      addTag(inputVal.toLowerCase());
       setInputVal("");
     }
 

@@ -6,9 +6,11 @@ import { AxiosError } from "axios";
 import { toast } from "sonner";
 
 export function useSendConnectionRequest() {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (data: ConnectionRequestData) => connectionServices.sendConnectionRequest(data),
     onSuccess: (res) => {
+      queryClient.invalidateQueries({ queryKey: ["all_requests"] });
       toast.success(res.message);
     },
     onError: (error: AxiosError<ApiError>) => {
@@ -45,10 +47,32 @@ export function useRejectRequest() {
   });
 }
 
+export function useWithdrawRequest() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => connectionServices.withdrawRequest(id),
+    onSuccess: (res) => {
+      queryClient.invalidateQueries({ queryKey: ["sent_requests"], });
+      toast.success(res.message);
+    },
+    onError: (error: AxiosError<ApiError>) => {
+      toast.error(error.response?.data?.error?.message || "Something went wrong");
+    },
+  });
+}
+
+
 export function useGetIncomingRequests() {
   return useQuery({
     queryKey: ["incoming_requests"],
     queryFn: () => connectionServices.getIncomingRequests(),
+  });
+}
+
+export function useGetSentRequests() {
+  return useQuery({
+    queryKey: ["sent_requests"],
+    queryFn: () => connectionServices.getSentRequests(),
   });
 }
 
@@ -79,4 +103,3 @@ export function useDisconnect() {
     },
   });
 }
-

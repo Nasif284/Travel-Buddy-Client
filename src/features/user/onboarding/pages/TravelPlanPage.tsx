@@ -5,8 +5,9 @@ import DestinationAutocomplete from "../components/DestinationsAutoComplete";
 import { CreateTripFormData, createTripSchema } from "../validators/tripPlan.validator";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useCreateTripPlan } from "../hooks/onboarding.hooks";
+import { useCreateOnboardingTripPlan } from "../hooks/onboarding.hooks";
 import { arrowForward, calendar, calendarReturn, locationPin, minus, plus } from "@/src/assets/icons";
+import Link from "next/link";
 
 const budgetOptions = [
   {
@@ -33,7 +34,7 @@ const budgetOptions = [
 
 export default function TravelPlanPage() {
   const [search, setSearch] = useState("");
-  const tripPlan = useCreateTripPlan();
+  const tripPlan = useCreateOnboardingTripPlan();
   const {
     register,
     handleSubmit,
@@ -45,15 +46,14 @@ export default function TravelPlanPage() {
 
     defaultValues: {
       budgetStyle: "moderate",
-      preferredMembers: 2,
       travelStyleCode: "adventure",
     },
   });
   const destination = watch("destination");
   const budgetCategory = watch("budgetStyle");
-  const buddies = watch("preferredMembers");
   const tripStyle = watch("travelStyleCode");
-
+    const today = new Date().toISOString().split("T")[0];
+    const dateFrom = watch("dateFrom");
   const tripStyles = [
     {
       code: "adventure",
@@ -81,7 +81,6 @@ export default function TravelPlanPage() {
       longitude: data.destination.longitude,
       dateFrom: new Date(data.dateFrom),
       dateTo: new Date(data.dateTo),
-      preferredMembers: data.preferredMembers,
       travelStyleCode: data.travelStyleCode.toLowerCase(),
       budgetStyle: data.budgetStyle,
     };
@@ -122,7 +121,7 @@ export default function TravelPlanPage() {
               <label className="block text-sm font-bold text-[#3f4944] uppercase tracking-wider font-headline">Departure</label>
               <div className="relative group">
                 <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-[#3f4944] group-focus-within:text-[#005440] transition-colors">{calendar}</div>
-                <input type="date" {...register("dateFrom")} className={inputBase} />
+                <input min={today} type="date" {...register("dateFrom")} className={inputBase} />
               </div>
               {errors.dateFrom && <p className="text-red-500 text-sm">{errors.dateFrom.message}</p>}
             </div>
@@ -130,7 +129,7 @@ export default function TravelPlanPage() {
               <label className="block text-sm font-bold text-[#3f4944] uppercase tracking-wider font-headline">Return</label>
               <div className="relative group">
                 <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-[#3f4944] group-focus-within:text-[#005440] transition-colors">{calendarReturn}</div>
-                <input type="date" {...register("dateTo")} className={inputBase} />
+                <input min={dateFrom || today} type="date" {...register("dateTo")} className={inputBase} />
               </div>
               {errors.dateTo && <p className="text-red-500 text-sm">{errors.dateTo.message}</p>}
             </div>
@@ -165,18 +164,6 @@ export default function TravelPlanPage() {
               })}
             </div>
           </div>
-          <div className="space-y-3">
-            <label className="block text-sm font-bold text-[#3f4944] uppercase tracking-wider font-headline">Preferred Travel Members Count</label>
-            <div className="flex items-center gap-4 bg-[#e0e3e0] w-fit p-1.5 rounded-xl">
-              <button type="button" onClick={() => setValue("preferredMembers", Math.max(1, buddies - 1))} className="w-12 h-12 flex items-center justify-center rounded-lg bg-white text-[#005440] hover:bg-[#c9eadb] transition-colors" aria-label="Decrease buddies">
-                {minus}
-              </button>
-              <span className="w-12 text-center font-bold text-xl select-none">{buddies}</span>
-              <button type="button" onClick={() => setValue("preferredMembers", buddies + 1)} className="w-12 h-12 flex items-center justify-center rounded-lg bg-[#0f6e56] text-white hover:bg-[#005440] transition-colors" aria-label="Increase buddies">
-                {plus}
-              </button>
-            </div>
-          </div>
 
           <div className="space-y-3">
             <label className="block text-sm font-bold text-[#3f4944] uppercase tracking-wider font-headline">Travel Style</label>
@@ -202,21 +189,68 @@ export default function TravelPlanPage() {
             </div>
           </div>
 
-          <div className="flex items-center justify-end pt-8 border-t border-[#bec9c3]/10">
-            <button
-              type="submit"
-              className={`group min-w-[240px] h-[48px] px-6 ${tripPlan.isPending ? "bg-[#addbd0]" : "bg-[#0f6e56]"}  text-white font-bold rounded-md
-                  hover:opacity-90 active:scale-95 transition-all shadow-md flex items-center justify-center gap-2`}
+          <div className="flex items-center justify-between pt-8 border-t border-[#bec9c3]/10">
+            {/* Back */}
+            <Link
+              href="/onboarding/travel-style"
+              className="
+      inline-flex items-center gap-2
+      text-[#3f4944]
+      font-semibold
+      hover:text-[#0f6e56]
+      transition-colors
+    "
             >
-              {tripPlan.isPending ? (
-                "Creating trip plan..."
-              ) : (
-                <>
-                  Create my plan &amp; find buddies
-                  {arrowForward}{" "}
-                </>
-              )}
-            </button>
+              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M15 18l-6-6 6-6" />
+              </svg>
+              Back
+            </Link>
+
+            <div className="flex items-center gap-4">
+              {/* Skip */}
+              <Link
+                href={"/"}
+                className="
+        text-sm
+        font-semibold
+        text-[#6f7a74]
+        hover:text-[#0f6e56]
+        transition-colors
+      "
+              >
+                Skip for now
+              </Link>
+
+              {/* Primary */}
+              <button
+                type="submit"
+                disabled={tripPlan.isPending}
+                className={`
+        group
+   
+        h-12
+        px-4
+        rounded-xl
+        font-bold
+        text-white
+        shadow-md
+        transition-all
+        active:scale-95
+        flex items-center justify-center gap-2
+        ${tripPlan.isPending ? "bg-[#addbd0] cursor-not-allowed" : "bg-[#0f6e56] hover:bg-[#005440]"}
+      `}
+              >
+                {tripPlan.isPending ? (
+                  "Creating trip plan..."
+                ) : (
+                  <>
+                    Create my plan 
+                    {arrowForward}
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </form>
       </div>

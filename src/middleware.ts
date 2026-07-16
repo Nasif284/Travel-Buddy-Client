@@ -10,7 +10,7 @@ export function middleware(request: NextRequest) {
   const protectedRoutes = ["/"];
   const authPaths = ["/login", "/signup"];
   const adminAuthPath = "/admin/login";
-  const adminProtected = ["/admin/users","/admin"];
+  const adminProtected = ["/admin/users", "/admin"];
 
   const isAuth = authPaths.includes(pathname);
   const isProtectedRoute = protectedRoutes.includes(pathname);
@@ -25,8 +25,12 @@ export function middleware(request: NextRequest) {
   }
 
   if (isProtectedRoute && !refreshToken) {
-    return NextResponse.redirect(new URL("/login", request.url));
+    const loginUrl = new URL("/login", request.url);
+    loginUrl.searchParams.set("redirect", request.nextUrl.pathname);
+    console.log(loginUrl+": login url")
+    return NextResponse.redirect(loginUrl);
   }
+
   if (isAdminProtected && !refreshToken) {
     return NextResponse.redirect(new URL("/admin/login", request.url));
   }

@@ -9,6 +9,7 @@ import PasswordField from "../components/PasswordField";
 import { useLogin } from "@/src/features/user/auth/hooks/auth.hooks";
 import { LoginFormData, loginSchema } from "../validators/login.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useSearchParams } from "next/navigation";
 
 interface LoginFormValues {
   email: string;
@@ -17,23 +18,23 @@ interface LoginFormValues {
 
 const LoginPage = () => {
   const login = useLogin();
-
   const {
     register,
-
     handleSubmit,
-
     formState: { errors },
   } = useForm<LoginFormData>({
-     resolver: zodResolver(loginSchema),
+    resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
       password: "",
     },
-    
   });
-
+  const params = useSearchParams();
+  const redirect = params.get("redirect");
   const onSubmit = (data: LoginFormValues) => {
+     if (redirect) {
+       sessionStorage.setItem("postLoginRedirect", redirect);
+     }
     login.mutate(data);
   };
 

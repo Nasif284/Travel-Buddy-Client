@@ -4,6 +4,8 @@ export const OnboardingProfileSchema = z.object({
   about: z.string().min(20, "Tell us a little more about yourself.").max(500, "About section cannot exceed 500 characters."),
   dateOfBirth: z.coerce.date({
     error: "Please select a valid date of birth.",
+  }) .refine((date) => date < new Date(), {
+    message: "Date of birth must be in the past.",
   }),
   nationality: z.string().min(1, "Nationality is required."),
   gender: z.enum(["male", "female", "non-binary"], {

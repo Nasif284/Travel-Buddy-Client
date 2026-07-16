@@ -5,21 +5,27 @@ import TravelerCard from "@/src/features/user/matches-connections/components/Tra
 import { useGetNearbyUsers } from "@/src/features/user/matches-connections/hooks/users.hooks";
 import { Pagination } from "@/src/components/Pagination";
 import { UserWithDetails } from "@/src/Interfaces/users.interface";
+import { useGetLocation } from "@/src/hooks/api/location.hooks";
 
 const LIMIT = 16;
 
 export default function NearbyTravelersPage() {
   const [page, setPage] = useState(1);
-
-  const { data, isLoading } = useGetNearbyUsers({
-    page,
-    limit: LIMIT,
-  });
-  if (!isLoading) {
-    console.log(data);
-  }
+  const { data: location } = useGetLocation();
+  const hasEnabled = !!location?.data?.state;
+  const { data, isLoading } = useGetNearbyUsers(
+    {
+      page,
+      limit: LIMIT,
+    },
+    hasEnabled,
+  );
   if (isLoading) {
-    return  <div className="ml-64 px-16 pt-24 pb-8 mt space-y-10"><div>Loading...</div></div> 
+    return (
+      <div className="ml-64 px-16 pt-24 pb-8 mt space-y-10">
+        <div>Loading...</div>
+      </div>
+    );
   }
 
   const users = data?.data?.users ?? [];

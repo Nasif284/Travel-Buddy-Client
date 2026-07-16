@@ -25,9 +25,14 @@ const NAV_ITEMS: NavItem[] = [
     icon: <ConnectionsIcon />,
   },
   {
-    href: "/trips",
-    label: "Trips",
+    href: "/trips/plans/active",
+    label: "Trip Plans",
     icon: <ExploreIcon />,
+  },
+  {
+    href: "/trips/groups",
+    label: "Trip Groups",
+    icon: <ConnectionsIcon />,
   },
   {
     href: "/messages",

@@ -29,7 +29,7 @@ export default function DestinationAutocomplete({ value, onChange, onSelect }: P
       const countryCode = place.addressComponents?.find((c: PlaceData) => c.types.includes("country"))?.shortText;
       onSelect({
         placeId,
-        displayName: place.formattedAddress || selected.placePrediction.text.text,
+        displayName:selected.placePrediction.text.text,
 
         city,
         state,
@@ -50,7 +50,6 @@ export default function DestinationAutocomplete({ value, onChange, onSelect }: P
         value={value}
         onChange={(e) => {
           setIsSelected(false);
-
           onChange(e.target.value);
         }}
         placeholder="Search destination..."

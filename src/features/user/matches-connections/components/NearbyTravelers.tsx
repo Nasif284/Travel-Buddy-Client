@@ -4,16 +4,19 @@ import { useGetNearbyUsers } from "../hooks/users.hooks";
 import { UserWithDetails } from "../../../../Interfaces/users.interface";
 import { arrowForward } from "@/src/assets/icons";
 import Link from "next/link";
+import { useGetLocation } from "@/src/hooks/api/location.hooks";
 
 const NearbyTravelers = () => {
-  const { data: nearbyUsers, isLoading: nearbyLoading } = useGetNearbyUsers({ page: 1, limit: 6 });
+  const { data, isLoading } = useGetLocation();
+  const hasEnabled = !!data?.data?.state;
+  const { data: nearbyUsers, isLoading: nearbyLoading } = useGetNearbyUsers({ page: 1, limit: 6 },hasEnabled);
   if (nearbyLoading) {
     return <h1>Loading...</h1>;
   } else {
   
     return (
       <div className="space-y-8">
-        <div className="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-3 gap-2">
           {nearbyUsers?.data?.users.map((traveler: UserWithDetails) => (
             <TravelerCard key={traveler.id} traveler={traveler} isNearBy={true} />
           ))}

@@ -1,5 +1,5 @@
 import { LocationIcon } from "@/src/assets/icons";
-import { ConnectionRequest } from "../interfaces/profile.interface";
+import { ConnectionRequest } from "../../profile/interfaces/profile.interface";
 import Link from "next/link";
 
 interface RequestCardProps {

@@ -5,9 +5,13 @@ import { useGetActiveTrip, useGetTripMatches } from "../hooks/matches.hooks";
 import MatchSuggestionCard from "./MatchSuggestionCard";
 import {  TripMatchData } from "../interfaces/profile-listing.interface";
 import { arrowForward, locationPin, PersonIcon } from "@/src/assets/icons";
+import { useState } from "react";
+import ModalLayout from "@/src/components/Modal";
+import CreateTrip from "../../trips/components/CreateTrip";
 
 const MatchSuggestions = () => {
   const { data: activeTrip, isLoading: loading } = useGetActiveTrip();
+  const [openModal,setOpenModal] = useState(false)
   const hasActiveTrip = !!activeTrip?.data;
   const { data, isLoading } = useGetTripMatches(activeTrip?.data?.id, { page: 1, limit: 6 });
 
@@ -20,15 +24,16 @@ const MatchSuggestions = () => {
 
   if (!hasActiveTrip) {
     return (
-      <div
-        className="
+      <>
+        <div
+          className="
      
           p-12
           text-center
         "
-      >
-        <div
-          className="
+        >
+          <div
+            className="
             w-20 h-20
             mx-auto
             rounded-2xl
@@ -36,17 +41,16 @@ const MatchSuggestions = () => {
             flex items-center justify-center
             text-[#0f6e56]
           "
-        >
-          {locationPin}
-        </div>
+          >
+            {locationPin}
+          </div>
 
-        <h3 className="mt-6 text-2xl font-black text-[#181d1a]">Create a Trip to Find Matches</h3>
+          <h3 className="mt-6 text-2xl font-black text-[#181d1a]">Create a Trip to Find Matches</h3>
 
-        <p className="mt-3 text-[#3f4944] max-w-xl mx-auto">Travel matches are based on your destination, travel dates, budget style and travel preferences. Create your first trip and we will suggest the most compatible travelers.</p>
+          <p className="mt-3 text-[#3f4944] max-w-xl mx-auto">Travel matches are based on your destination, travel dates, budget style and travel preferences. Create your first trip and we will suggest the most compatible travelers.</p>
 
-        <Link
-          href="/onboarding/travel-plan"
-          className="
+          <button
+            className="
             inline-flex
             items-center
             gap-2
@@ -59,19 +63,27 @@ const MatchSuggestions = () => {
             hover:opacity-90
             transition-all
           "
-        >
-          Create a Trip
-          {arrowForward}
-        </Link>
-      </div>
+            onClick={() => setOpenModal(true)}
+          >
+            Create a Trip
+            {arrowForward}
+          </button>
+        </div>{" "}
+        {openModal && (
+          <ModalLayout isOpen={openModal} onClose={() => setOpenModal(false)} title="Create Trip">
+            <CreateTrip onClose={()=> setOpenModal(false)} />
+          </ModalLayout>
+        )}
+      </>
     );
   }
 
   if (data?.data?.matches?.length === 0) {
     return (
-      <div className="py-16 text-center">
-        <div
-          className="
+
+        <div className="py-16 text-center">
+          <div
+            className="
           w-20 h-20
           mx-auto
           rounded-2xl
@@ -79,20 +91,20 @@ const MatchSuggestions = () => {
           flex items-center justify-center
           text-[#0f6e56]
         "
-        >
-          {<PersonIcon />}
-        </div>
+          >
+            {<PersonIcon />}
+          </div>
 
-        <h3 className="mt-6 text-2xl font-black text-[#181d1a]">No Matches Found Yet</h3>
+          <h3 className="mt-6 text-2xl font-black text-[#181d1a]">No Matches Found Yet</h3>
 
-        <p className="mt-3 text-[#3f4944] max-w-xl mx-auto">
-          {`We couldn't find any travelers matching your current trip. As more
+          <p className="mt-3 text-[#3f4944] max-w-xl mx-auto">
+            {`We couldn't find any travelers matching your current trip. As more
           travelers create trips, we'll automatically suggest compatible matches.`}
-        </p>
+          </p>
 
-        <Link
-          href="/trip/matches"
-          className="
+          <Link
+            href="/trips/plans"
+            className="
           inline-flex
           items-center
           gap-2
@@ -106,17 +118,18 @@ const MatchSuggestions = () => {
           hover:text-white
           transition-all
         "
-        >
-          View All Trips
-          {arrowForward}
-        </Link>
-      </div>
+          >
+            View All Trips
+            {arrowForward}
+          </Link>
+        </div>
+
     );
   }
 
   return (
     <div className="space-y-8">
-      <div className="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-3 gap-2">
         {data?.data?.matches.map((match: TripMatchData) => (
           <MatchSuggestionCard match={match.tripMatch} key={match.user.id} traveler={match.user} isNearBy={false} />
         ))}

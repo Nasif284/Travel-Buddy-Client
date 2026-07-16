@@ -6,6 +6,7 @@ import { AxiosError } from "axios";
 import { ApiError } from "@/src/types/types";
 import { useRouter } from "next/navigation";
 import { TravelStyleData, TripPlanData } from "../interfaces/interfaces";
+import { tripServices } from "../../trips/services/trip.service";
 
 export function useSetSource() {
   const router = useRouter();
@@ -57,12 +58,46 @@ export function useGetPlacesSuggestion(search: string, enabled: boolean) {
   });
 }
 
-export function useCreateTripPlan() {
+export function useCreateOnboardingTripPlan() {
   const router = useRouter();
   return useMutation({
-    mutationFn: (data: TripPlanData) => onboardingService.createTripPlan(data),
+    mutationFn: (data: TripPlanData) => tripServices.createTripPlan(data),
     onSuccess: (res) => {
       router.push("/");
+      toast.success(res.message);
+    },
+    onError: (error: AxiosError<ApiError>) => {
+      toast.error(error.response?.data?.error?.message || "Something went wrong");
+    },
+  });
+}
+
+export function useEditOnboardingProfile() {
+  const router = useRouter();
+  return useMutation({
+    mutationFn: (data: object) => onboardingService.editOnboardingProfile(data),
+    onSuccess: (res) => {
+      router.push("/onboarding/travel-style");
+      toast.success(res.message);
+    },
+    onError: (error: AxiosError<ApiError>) => {
+      toast.error(error.response?.data?.error?.message || "Something went wrong");
+    },
+  });
+}
+
+export function useEditTravelStyle() {
+  const router = useRouter();
+  return useMutation({
+    mutationFn: (data: TravelStyleData) => onboardingService.editTravelStyle(data),
+    onSuccess: (res) => {
+      const redirect = sessionStorage.getItem("postLoginRedirect");
+      if (redirect) {
+        sessionStorage.removeItem("postLoginRedirect");
+        router.replace(redirect);
+      } else {
+        router.replace("/onboarding/travel-plan");
+      }
       toast.success(res.message);
     },
     onError: (error: AxiosError<ApiError>) => {

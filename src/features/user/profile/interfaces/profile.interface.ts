@@ -31,7 +31,7 @@ export interface UpdateProfileData {
   fullName: string;
   bio: string;
   isTraveling: boolean;
-  travelPersonalityCode?: string;
+  travelPersonalityCode: string;
   interests: string[];
   languages: string[];
   skills: string[];
@@ -44,6 +44,21 @@ export interface ConnectionRequest {
   matchId: string;
   createdAt: Date;
   sender: {
+    id: string;
+    avatarUrl: string | null;
+    fullName: string;
+    state: string | null;
+    country: string | null;
+  };
+}
+
+export interface SentRequest {
+  id: string;
+  status: string;
+  message: string | null;
+  matchId: string;
+  createdAt: Date;
+  receiver: {
     id: string;
     avatarUrl: string | null;
     fullName: string;
