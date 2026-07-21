@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAdminLogout } from "../features/auth/hooks/admin-auth.hooks";
 import { useAuthStore } from "@/src/store/auth.store";
-import { GroupIcon, LogoutIcon } from "@/src/assets/icons";
+import { ExploreIcon, GroupIcon, LogoutIcon } from "@/src/assets/icons";
 
 type NavItem = {
   href: string;
@@ -15,7 +15,7 @@ type NavItem = {
 const navItems: NavItem[] = [
   // { href: "/admin/dashboard", label: "Dashboard", icon: <Icons.DashboardIcon /> },
   { href: "/admin/users", label: "All Users", icon: <GroupIcon /> },
-  // { href: "/admin/trips", label: "All Trips", icon: <Icons.ExploreIcon /> },
+  { href: "/admin/trips", label: "All Trips", icon: <ExploreIcon /> },
   // { href: "/admin/reports", label: "Reports", icon: <Icons.AssessmentIcon /> },
   // { href: "/admin/analytics", label: "Analytics", icon: <Icons.MonitoringIcon /> },
   // { href: "/admin/admins", label: "Admins", icon: <Icons.AdminIcon /> },

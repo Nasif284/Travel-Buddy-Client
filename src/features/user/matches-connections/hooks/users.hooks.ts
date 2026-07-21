@@ -23,9 +23,10 @@ export function useTravelerProfile(id: string) {
   });
 }
 
-export function useGetMe() {
+export function useGetMe(enabled:boolean) {
   return useQuery({
     queryKey: ["user_profile"],
     queryFn: () => usersServices.getMe(),
+    enabled
   });
 }

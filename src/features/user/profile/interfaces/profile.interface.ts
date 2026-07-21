@@ -12,6 +12,8 @@ export interface UserProfile {
   id: string;
   fullName: string;
   bio: string | null;
+  phone: string | null,
+  isPhoneVerified:boolean,
   avatarUrl: string | null;
   coverUrl: string | null;
   age: number | null;
@@ -79,9 +81,21 @@ export interface SettingsData {
   showTravelingStatus: boolean;
   profileVisibilityCode: string;
   requestsFromCode: string;
+  phone: string | null;
+  isPhoneVerified: boolean;
 }
 export interface RequestData {
   id: string;
   senderId: string;
   receiverId: string;
+}
+export interface OtpInputProps {
+  value: string;
+  onChange: (val: string) => void;
+  error?: string;
+}
+export type Step = "phone" | "otp";
+
+export interface PhoneVerificationModalProps {
+  onClose: () => void;
 }

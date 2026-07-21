@@ -7,6 +7,7 @@ import { useRouter } from "next/router";
 import { toast } from "sonner";
 import { ResetPassword } from "../../auth/interfaces/auth.interfaces";
 import { authService } from "../../auth/services/auth.service";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export function useUpdateProfile() {
   const queryClient = useQueryClient();
@@ -64,6 +65,35 @@ export function useResetPassword() {
     },
   });
 }
+
+export function useSendPhoneOtp() {
+  return useMutation({
+    mutationFn: (data: { phone: string }) => ProfileServices.sendPhoneOtp(data),
+    onSuccess: (res) => {
+      toast.success(res.message);
+    },
+    onError: (error: AxiosError<ApiError>) => {
+      toast.error(error.response?.data?.error?.message || "Something went wrong");
+    },
+  });
+}
+
+export function useVerifyPhoneOtp() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: { phone: string; otp: string }) => ProfileServices.verifyPhoneOtp(data),
+    onSuccess: (res) => {
+      toast.success(res.message);
+      queryClient.invalidateQueries({
+        queryKey: ["profile_settings"],
+      });
+    },
+    onError: (error: AxiosError<ApiError>) => {
+      toast.error(error.response?.data?.error?.message || "Something went wrong");
+    },
+  });
+}
+
 export function useGetSettings() {
   return useQuery({
     queryKey: ["profile_settings"],
@@ -79,10 +109,41 @@ export function useUpdateSettings() {
       queryClient.invalidateQueries({
         queryKey: ["profile_settings"],
       });
-      toast.success(res.message)
+      toast.success(res.message);
     },
     onError: (error: AxiosError<ApiError>) => {
       toast.error(error.response?.data?.error?.message || "Something went wrong");
     },
   });
+}
+
+export function useCountdown(seconds: number) {
+  const [timeLeft, setTimeLeft] = useState(0);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  const start = useCallback(() => {
+    setTimeLeft(seconds);
+    if (intervalRef.current) clearInterval(intervalRef.current);
+    intervalRef.current = setInterval(() => {
+      setTimeLeft((t) => {
+        if (t <= 1) {
+          clearInterval(intervalRef.current!);
+          return 0;
+        }
+        return t - 1;
+      });
+    }, 1000);
+  }, [seconds]);
+
+  useEffect(
+    () => () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    },
+    [],
+  );
+
+  const formatted = `${String(Math.floor(timeLeft / 60)).padStart(2, "0")}:${String(timeLeft % 60).padStart(2, "0")}`;
+  const expired = timeLeft === 0;
+
+  return { formatted, expired, start };
 }

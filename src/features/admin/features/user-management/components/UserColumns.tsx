@@ -53,8 +53,12 @@ export function buildUserColumns(openMenuId: string | null, onToggleMenu: (id: s
       key: "user",
       header: "User profile",
       render: (user) => (
-        <div>
-          <p className="font-bold text-[#1c1c1a]">{user.fullName}</p>
+        <div className="flex items-center gap-3">
+          <img src={user.avatarUrl || "/images/default-avatar.png"} alt={user.fullName} className="h-10 w-10 rounded-full object-cover border border-gray-200" />
+
+          <div>
+            <p className="font-bold text-[#1c1c1a]">{user.fullName}</p>
+          </div>
         </div>
       ),
     },
@@ -78,7 +82,11 @@ export function buildUserColumns(openMenuId: string | null, onToggleMenu: (id: s
       key: "verified",
       header: "Verified",
       align: "center",
-      render: (user) => <VerifiedIcon filled={user.isEmailVerified} />,
+      render: (user) => (
+        <div className="flex items-center justify-center">
+          <VerifiedIcon filled={user.isEmailVerified} />
+        </div>
+      ),
     },
     {
       key: "action",

@@ -3,37 +3,39 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
-  const refreshToken = request.cookies.get("refreshToken")?.value;
-
   const pathname = request.nextUrl.pathname;
 
-  const protectedRoutes = ["/"];
-  const authPaths = ["/login", "/signup"];
-  const adminAuthPath = "/admin/login";
-  const adminProtected = ["/admin/users", "/admin"];
+  const userRefreshToken = request.cookies.get("refreshToken")?.value;
+  const adminRefreshToken = request.cookies.get("adminRefreshToken")?.value;
 
-  const isAuth = authPaths.includes(pathname);
-  const isProtectedRoute = protectedRoutes.includes(pathname);
-  const isAdminAuthPath = pathname == adminAuthPath;
-  const isAdminProtected = adminProtected.includes(pathname);
+  const isUserAuth = pathname === "/login" || pathname === "/signup";
+  const isAdminAuth = pathname === "/admin/login";
 
-  if (isAdminAuthPath && refreshToken) {
-    return NextResponse.redirect(new URL("/admin/users", request.url));
-  }
-  if (isAuth && refreshToken) {
+  const isAdminRoute = pathname.startsWith("/admin");
+  const isUserProtected = pathname === "/" || pathname.startsWith("/profile") || pathname.startsWith("/trips") || pathname.startsWith("/chat");
+
+  if (isUserAuth && userRefreshToken) {
     return NextResponse.redirect(new URL("/", request.url));
   }
 
-  if (isProtectedRoute && !refreshToken) {
+  if (isAdminAuth && adminRefreshToken) {
+    return NextResponse.redirect(new URL("/admin/users", request.url));
+  }
+
+  if (isUserProtected && !userRefreshToken) {
     const loginUrl = new URL("/login", request.url);
-    loginUrl.searchParams.set("redirect", request.nextUrl.pathname);
-    console.log(loginUrl+": login url")
+    loginUrl.searchParams.set("redirect", pathname);
     return NextResponse.redirect(loginUrl);
   }
 
-  if (isAdminProtected && !refreshToken) {
+  if (isAdminRoute && !isAdminAuth && !adminRefreshToken) {
     return NextResponse.redirect(new URL("/admin/login", request.url));
   }
 
   return NextResponse.next();
 }
+export const config = {
+  matcher: [
+    "/((?!api|_next/static|_next/image|favicon.ico).*)",
+  ],
+};

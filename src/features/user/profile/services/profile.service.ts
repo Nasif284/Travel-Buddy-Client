@@ -22,4 +22,12 @@ export const ProfileServices = {
     const res = await api.patch("/profile/settings", data);
     return res.data;
   },
+  sendPhoneOtp: async (data: { phone: string }) => {
+    const res = await api.post("/auth/send-otp/phone", data);
+    return res.data;
+  },
+  verifyPhoneOtp: async (data: { phone: string, otp:string }) => {
+    const res = await api.post("/auth/verify/phone", data);
+    return res.data;
+  },
 };

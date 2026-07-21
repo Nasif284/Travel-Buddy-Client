@@ -35,8 +35,12 @@ export const tripServices = {
     const res = await api.get(`/trip/group/active`);
     return res.data;
   },
-  getGroup :async (id: string) => {
+  getGroup: async (id: string) => {
     const res = await api.get(`/trip/group/${id}`);
     return res.data;
-  } 
+  },
+  getWeather: async (id: string) => {
+    const res = await api.get(`/trip/group/${id}/weather`);
+    return res.data;
+  },
 };

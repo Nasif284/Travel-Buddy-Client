@@ -1,4 +1,4 @@
-import ExpensesPage from '@/src/features/user/trips/pages/ExpensePage'
+import ExpensesPage from '@/src/features/user/trips/features/expense/pages/ExpensePage'
 import React from 'react'
 
 const page = () => {

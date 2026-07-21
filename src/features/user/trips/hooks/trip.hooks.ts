@@ -85,9 +85,15 @@ export function useCrateGroup() {
     },
   });
 }
-export function useGetGroup(id:string) {
+export function useGetGroup(id: string) {
   return useQuery({
-    queryKey: ["group",id],
+    queryKey: ["group", id],
     queryFn: () => tripServices.getGroup(id),
+  });
+}
+export function useGetWeather(id: string) {
+  return useQuery({
+    queryKey: ["trip_weather", id],
+    queryFn: () => tripServices.getWeather(id),
   });
 }

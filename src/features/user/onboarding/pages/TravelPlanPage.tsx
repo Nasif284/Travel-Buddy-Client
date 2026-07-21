@@ -33,6 +33,7 @@ const budgetOptions = [
 ] as const;
 
 export default function TravelPlanPage() {
+   
   const [search, setSearch] = useState("");
   const tripPlan = useCreateOnboardingTripPlan();
   const {

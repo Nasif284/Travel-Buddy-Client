@@ -5,6 +5,7 @@ export type Priority = "low" | "medium" | "high";
 
 export interface ChecklistMember {
   id: string;
+  userId: string;
   fullName: string;
   avatarUrl: string | null;
 }
@@ -44,6 +45,8 @@ export interface SquadMember {
 }
 
 export interface TaskFormProps {
+  id: string;
+  taskId?:string,
   title: string;
   submitLabel: string;
   initialLabel?: string;
@@ -52,8 +55,8 @@ export interface TaskFormProps {
   initialAssignee?: string;
   initialNotes?: string;
   categories: Category[];
-  members:Member[]
-  onSubmit: (data: { label: string; category: string; priority: Priority; assignee: string; notes: string }) => void;
+  members: Member[];
+  isEdit:boolean
   onClose: () => void;
 }
 
@@ -63,4 +66,13 @@ export const SQUAD_MEMBERS: SquadMember[] = [
   { name: "David", packed: 6, total: 12, avatar: "https://lh3.googleusercontent.com/aida-public/AB6AXuCD41w3Rt3GPNPNHBG2QEnOj2mFR-j8dXHeETn8JLiKE3AHLM7h7QA4OKYUdvlgOg5ljQO4quokpUrGO1x1nJ1eQ6Xr2ht-aX_p4PiAHo9AHqulKBSYpQ4MAx6teNFnDFLTKnAcbRwVsEOGAEQ7iz88acOuxKB7k4PKtz0_kJAdd5y3-GojIO7IJIh6F1pMbt_j_453469PBOmA3wVk5UgD_ySLnUFswTp22ZieyC46fvfQQY8PeuZSsI6yuQYBoXVYXH3vtYpofo0" },
   { name: "Elena", packed: 4, total: 7, avatar: "https://lh3.googleusercontent.com/aida-public/AB6AXuAOU2-0xQi4ojI4YkxsnHmFdHSayLdRrt4cyV8rE1f1E7nfV7j-W_wwYY3l4jwHcWRB174TYJmQQABzCRUZpi9cXyqSDJnv3yTI3kS8nONdsCvkBGHUxflXWnqZCVj8ehiZHO4OAsXknmq65xMIX6nSja3ZftDYIMT_1v0j7hLEpOHY64CIs7v9_VSnwIt5VLbs7VxMBG6ujYYJdzmn6j5Yz6-Q5w2lP70Ym7Iln40FA4PAgs529t-SR8JQWS6T1-eBAVqRAz9YsCE" },
 ];
+
+export interface EditChecklistTask {
+  title: string;
+  categoryCode: string;
+  priorityCode: string;
+  assignedTo: string;
+  notes?: string;
+}
+
 

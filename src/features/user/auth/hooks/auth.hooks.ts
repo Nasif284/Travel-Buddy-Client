@@ -2,20 +2,21 @@
 import { authService } from "@/src/features/user/auth/services/auth.service";
 import { LoginInput, RegisterInput, ResetPassword, SendOtp, verifyEmail, VerifyOtp } from "../interfaces/auth.interfaces";
 import { useAuthStore } from "@/src/store/auth.store";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { ApiError } from "@/src/types/types";
 
 export function useLogin() {
-  const setUser = useAuthStore((state) => state.setUser);
+  const {setUser,setOnboarding} = useAuthStore((state) => state);
   const router = useRouter();
   const sendOtp = useSendOtp();
   return useMutation({
     mutationFn: (data: LoginInput) => authService.login(data),
     onSuccess: (res) => {
       setUser(res.data.user);
+      setOnboarding(1,false)
       toast.success(res.message);
       if (!res.data.isVerified) {
         sendOtp.mutate({ email: res.data.user.email as string, purpose: "email_verify" });
@@ -45,12 +46,13 @@ export function useLogin() {
 }
 
 export function useGoogleAuth() {
-  const setUser = useAuthStore((state) => state.setUser);
+  const {setUser,setOnboarding} = useAuthStore((state) => state);
   const router = useRouter();
   return useMutation({
     mutationFn: (token: string) => authService.googleAuth(token),
     onSuccess: (res) => {
       setUser(res.data.user);
+      setOnboarding(1,false)
       toast.success(res.message);
       if (res.data.isNew) {
         router.push("/onboarding/source");
@@ -79,14 +81,15 @@ export function useGoogleAuth() {
 }
 
 export function useRegister() {
-  const setUser = useAuthStore((state) => state.setUser);
+  const {setUser,setOnboarding} = useAuthStore((state) => state);
   const router = useRouter();
   return useMutation({
     mutationFn: (data: RegisterInput) => authService.register(data),
     onSuccess: (res) => {
       setUser(res.data);
+      setOnboarding(1,false)
       toast.success(res.message);
-      router.push("/verify");
+      router.replace("/verify");
     },
     onError: (error: AxiosError<ApiError>) => {
       toast.error(error.response?.data?.error?.message || "Something went wrong");
@@ -100,7 +103,7 @@ export function useVerify() {
     mutationFn: (data: verifyEmail) => authService.verifyEmail(data),
     onSuccess: (res) => {
       toast.success(res.message);
-      router.push("/onboarding/source");
+      router.replace("/onboarding/source");
     },
     onError: (error: AxiosError<ApiError>) => {
       toast.error(error.response?.data?.error?.message || "Something went wrong");
@@ -122,12 +125,15 @@ export function useSendOtp() {
 
 export function useLogout() {
   const router = useRouter();
-  const logout = useAuthStore((state) => state.logout);
+    const queryClient = useQueryClient();
+  const {logout,setOnboarding} = useAuthStore((state) => state);
   return useMutation({
     mutationFn: () => authService.logout(),
     onSuccess: (res) => {
       toast.success(res.message);
+      queryClient.clear();
       logout();
+      setOnboarding(0,false)
       router.replace("/login");
     },
     onError: (error: AxiosError<ApiError>) => {
@@ -156,7 +162,7 @@ export function useResetPassword() {
     mutationFn: (data: ResetPassword) => authService.resetPassword(data),
     onSuccess: (res) => {
       toast.success(res.message);
-      router.push("/login");
+      router.replace("/login");
     },
     onError: (error: AxiosError<ApiError>) => {
       toast.error(error.response?.data?.error?.message || "Something went wrong");

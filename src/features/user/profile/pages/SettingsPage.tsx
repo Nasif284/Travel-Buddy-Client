@@ -5,6 +5,7 @@ import Toggle from "../components/Toggle";
 import ResetPasswordModal from "../components/ResetPasswordModal";
 import { useGetSettings, useUpdateSettings } from "../hooks/profile.hooks";
 import { useDebounce } from "@/src/hooks/debounce.hook";
+import VerificationSection from "../components/VerificationSection";
 const INITIAL_BLOCKED: BlockedUser[] = [
   {
     id: 1,
@@ -29,14 +30,17 @@ export default function SettingsPage() {
   const { data, isLoading } = useGetSettings();
   const update = useUpdateSettings();
   const initialSettings = data?.data;
-    const [settings, setSettings] = useState<SettingsData>({
-        profileVisibilityCode: "",
-        requestsFromCode: "",
-        showOnlineStatus: true,
-        showTravelingStatus:true
+  const [settings, setSettings] = useState<SettingsData>({
+    profileVisibilityCode: "",
+    requestsFromCode: "",
+    showOnlineStatus: true,
+    showTravelingStatus: true,
+    phone: "",
+    isPhoneVerified:false
   });
   useEffect(() => {
     if (data?.data) {
+      console.log(data.data);
       setSettings(data.data);
     }
   }, [data]);
@@ -48,9 +52,9 @@ export default function SettingsPage() {
     if (!settings || !initialSettings) return false;
     return JSON.stringify(settings) !== JSON.stringify(initialSettings);
   }, [settings, initialSettings]);
- const handleSave = () => {
-   update.mutate(settings);
- };
+  const handleSave = () => {
+    update.mutate(settings);
+  };
   function handleUnblock(id: number) {
     setBlockedUsers((prev) => prev.filter((u) => u.id !== id));
   }
@@ -65,10 +69,14 @@ export default function SettingsPage() {
     if (window.confirm("This action is permanent. Are you absolutely sure you want to delete your account?")) {
       // call API
     }
-    }
-    if (isLoading) {
-        return       <main className="ml-64 mt-20 min-h-screen pb-32"><h1>Loading..</h1></main>
-    }
+  }
+  if (isLoading) {
+    return (
+      <main className="ml-64 mt-20 min-h-screen pb-32">
+        <h1>Loading..</h1>
+      </main>
+    );
+  }
 
   return (
     <>
@@ -130,55 +138,7 @@ export default function SettingsPage() {
           <div className="max-w-6xl mx-auto space-y-8">
             {/* ── Verification Status ───────────────────────────────── */}
             <Card>
-              <h2 className="text-lg font-bold mb-5 flex items-center gap-2 font-headline">
-                <span className="text-[#005440]">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                    <polyline points="9 12 11 14 15 10" />
-                  </svg>
-                </span>
-                Verification Status
-              </h2>
-              <div className="flex flex-wrap items-center gap-10">
-                {/* Phone verified */}
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-[#0f6e56]/10 flex items-center justify-center text-[#005440]">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.9a16 16 0 0 0 6.19 6.19l.95-.94a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <p className="text-sm font-bold text-[#005440] flex items-center gap-1">
-                      Phone verified
-                      <span className="text-[#005440]">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                          <polyline points="22 4 12 14.01 9 11.01" />
-                        </svg>
-                      </span>
-                    </p>
-                    <p className="text-xs text-[#3f4944]">+1 ••• ••• 42</p>
-                  </div>
-                </div>
-
-                {/* ID not verified */}
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center text-stone-400">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <rect x="2" y="7" width="20" height="14" rx="2" />
-                      <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
-                      <line x1="12" y1="12" x2="12" y2="16" />
-                      <line x1="10" y1="14" x2="14" y2="14" />
-                    </svg>
-                  </div>
-                  <div>
-                    <p className="text-sm font-bold text-stone-500">ID not verified</p>
-                    <a href="#" className="text-xs text-[#005440] font-semibold hover:underline">
-                      Verify now
-                    </a>
-                  </div>
-                </div>
-              </div>
+              <VerificationSection phone={settings.phone} isPhoneVerified={settings.isPhoneVerified} />
             </Card>
 
             {/* ── Privacy Controls ──────────────────────────────────── */}

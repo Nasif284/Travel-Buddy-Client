@@ -2,12 +2,8 @@
 
 import { NotificationsIcon } from "@/src/assets/icons";
 import { useAuthStore } from "@/src/store/auth.store";
-import { useState } from "react";
-
-
 
 export default function AdminTopBar() {
-  const [search, setSearch] = useState("");
   const user = useAuthStore((state) => state.user);
   return (
     <header className="h-14 fixed top-0 right-0 left-60 z-10 bg-white/90 backdrop-blur-xl border-b border-stone-200/50 flex items-center justify-between px-8">

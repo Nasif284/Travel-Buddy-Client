@@ -30,21 +30,8 @@ export interface TripMember {
   avatar: string;
   name: string;
 }
-export interface Activity {
-  month: string;
-  day: number;
-  title: string;
-  time: string;
-  location: string;
-  highlight?: boolean;
-}
 
-export interface Message {
-  name: string;
-  avatar: string;
-  time: string;
-  text: string;
-}
+
 
 export interface Member {
   id: string;
@@ -58,14 +45,6 @@ export interface Category {
   icon: string; // Lucide icon name
 }
 
-export interface ChecklistItem {
-  id: string;
-  text: string;
-  checked: boolean;
-  priority: boolean;
-  categoryId: string;
-  assigneeId: string; // Member id
-}
 
 export interface EditTripData {
   dateFrom: Date;
@@ -87,4 +66,26 @@ export interface GroupData {
   coverUrl: string;
   destination: string;
   members: GroupMembers[];
+}
+
+export interface Activity {
+  month: string;
+  day: number;
+  title: string;
+  time: string;
+  location: string;
+  highlight?: boolean;
+}
+
+export interface Message {
+  name: string;
+  avatar: string;
+  time: string;
+  text: string;
+}
+
+export interface ChecklistItem {
+  id: number;
+  label: string;
+  done: boolean;
 }

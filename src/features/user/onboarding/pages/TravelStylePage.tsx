@@ -6,6 +6,7 @@ import { useAuthMe } from "../../auth/hooks/auth.hooks";
 import { capitalizeFirstLetter } from "@/src/utils/capitalizseFirstLetter";
 import { useGetMe } from "../../matches-connections/hooks/users.hooks";
 import Link from "next/link";
+import { useAuthStore } from "@/src/store/auth.store";
 
 type TravelStyle = "Budget" | "Backpacker" | "Luxury";
 type Interest = "Beach" | "Mountains" | "Party" | "Culture" | "Foodie" | "Hiking";
@@ -13,7 +14,9 @@ type Personality = "Introvert" | "Ambivert" | "Extrovert";
 type MatchPref = "Men" | "Women" | "Everyone";
 
 export default function TravelStylePage() {
-  const { data, isLoading } = useGetMe();
+  const { onboarding } = useAuthStore((state) => state);
+  const enabled = onboarding.step > 3;
+  const { data, isLoading } = useGetMe(enabled);
   const me = data?.data;
   const [travelStyle, setTravelStyle] = useState<TravelStyle>("Backpacker");
   const [interests, setInterests] = useState<Set<Interest>>(new Set(["Mountains", "Culture"]));

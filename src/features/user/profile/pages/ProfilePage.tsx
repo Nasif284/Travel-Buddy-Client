@@ -28,11 +28,13 @@ const personalityOptions = [
 ];
 
 export default function ProfileManagement() {
-  const { data, isLoading } = useGetMe();
+  const { data, isLoading } = useGetMe(true);
   const initialProfile = data?.data;
   const [profile, setProfile] = useState<UserProfile>({
     id: "",
     fullName: "",
+    phone: "",
+    isPhoneVerified:false,
     bio: "",
     avatarUrl: "",
     coverUrl: "",

@@ -1,24 +1,53 @@
 import { useState } from "react";
 import { Priority, TaskFormProps } from "../interfaces/interface";
 import { Member } from "../../members/interfaces/interfaces";
-const PRIORITY_CONFIG: Record<Priority, { label: string; dot: string; bg: string; text: string }> = {
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { TaskFormData,taskSchema } from "../validators/validator";
+import { useAddTask, useEditTask } from "../hooks/checklist.hooks";
+const PRIORITY_CONFIG: Record<string, { label: string; dot: string; bg: string; text: string }> = {
   low: { label: "Low", dot: "bg-slate-400", bg: "bg-[#f4f5f4]", text: "text-[#181d1a]" },
   medium: { label: "Medium", dot: "bg-[#0f6e56]", bg: "bg-[#c9eadb]", text: "text-[#022017]" },
   high: { label: "High", dot: "bg-[#ba1a1a]", bg: "bg-[#ffdad6]", text: "text-[#ba1a1a]" },
 };
 
-export default function TaskFormModal({ title, submitLabel, initialLabel = "", initialCategory = "documents", initialPriority = "medium", initialNotes = "", categories, onSubmit, onClose, members, initialAssignee = members[0].id }: TaskFormProps) {
-  const [label, setLabel] = useState(initialLabel);
-  const [category, setCategory] = useState(initialCategory);
-  const [priority, setPriority] = useState<Priority>(initialPriority);
-  const [assignee, setAssignee] = useState(initialAssignee);
-  const [notes, setNotes] = useState(initialNotes);
-
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!label.trim()) return;
-    onSubmit({ label: label.trim(), category, priority, assignee, notes });
+export default function TaskFormModal({id,taskId, title, submitLabel, initialLabel = "", initialCategory = "documents", initialPriority = "medium", initialNotes = "", categories, onClose, members, initialAssignee = members[0].id, isEdit = false }: TaskFormProps) {
+  const add = useAddTask()
+  const edit  = useEditTask()
+  const {
+  register,
+  handleSubmit,
+  control,
+  formState: { errors },
+} = useForm<TaskFormData>({
+  resolver: zodResolver(taskSchema),
+  mode:"onBlur",
+  defaultValues: {
+    title: initialLabel,
+    categoryCode: initialCategory.toUpperCase(),
+    priorityCode: initialPriority.toUpperCase(),
+    assignedTo: initialAssignee,
+    notes: initialNotes,
+  },
+});
+  const onSubmit = (data: TaskFormData) => {
+    if (isEdit) {
+      edit.mutate({ id, taskId: taskId!, data }, {
+        onSuccess: () => {
+          onClose()
+        }
+      })
+    } else {
+      add.mutate(
+        { id, data },
+        {
+          onSuccess: () => {
+            onClose();
+          },
+        },
+      );
   }
+};
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#181d1a]/60 backdrop-blur-md px-4">
@@ -34,82 +63,105 @@ export default function TaskFormModal({ title, submitLabel, initialLabel = "", i
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden">
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col flex-1 overflow-hidden" noValidate>
           <div className="px-8 py-6 overflow-y-auto space-y-6 flex-1">
             {/* Task name */}
             <div className="space-y-2">
               <label className="block text-sm font-bold text-[#3f4944] px-1">Task Name</label>
-              <input type="text" required autoFocus value={label} onChange={(e) => setLabel(e.target.value)} placeholder="e.g., Print flight tickets" className="w-full h-[52px] px-4 bg-[#f4f5f4] border-none rounded-xl focus:ring-2 focus:ring-[#0f6e56] focus:bg-white transition-all text-[#181d1a] placeholder:text-[#bec9c3] outline-none" />
+              <input type="text" autoFocus {...register("title")} placeholder="e.g., Print flight tickets" className="w-full h-[52px] px-4 bg-[#f4f5f4] border-none rounded-xl focus:ring-2 focus:ring-[#0f6e56] focus:bg-white transition-all text-[#181d1a] placeholder:text-[#bec9c3] outline-none" />
+              {errors.title && <p>{errors.title.message}</p>}
             </div>
 
             {/* Category */}
             <div className="space-y-3">
               <label className="block text-sm font-bold text-[#3f4944] px-1">Category</label>
-              <div className="flex flex-wrap gap-2">
-                {categories.map((cat) => (
-                  <button
-                    key={cat.code}
-                    type="button"
-                    onClick={() => setCategory(cat.code)}
-                    className={`px-4 py-2 rounded-full text-sm font-semibold transition-all
-                      ${category === cat.code ? "bg-[#0f6e56] text-white" : "bg-[#e5e9e5] text-[#3f4944] hover:bg-[#c9eadb]"}`}
-                  >
-                    {cat.name}
-                  </button>
-                ))}
-              </div>
+              <Controller
+                control={control}
+                name="categoryCode"
+                render={({ field }) => (
+                  <div className="flex flex-wrap gap-2">
+                    {categories.map((cat) => (
+                      <button
+                        key={cat.code}
+                        type="button"
+                        onClick={() => field.onChange(cat.code.toUpperCase())}
+                        className={`px-4 py-2 rounded-full text-sm font-semibold transition-all
+                      ${field.value.toLowerCase() === cat.code ? "bg-[#0f6e56] text-white" : "bg-[#e5e9e5] text-[#3f4944] hover:bg-[#c9eadb]"}`}
+                      >
+                        {cat.name}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              />
+              {errors.categoryCode && <p className="text-red-500 text-xs mt-2">{errors.categoryCode.message}</p>}
             </div>
 
             {/* Priority */}
             <div className="space-y-3">
               <label className="block text-sm font-bold text-[#3f4944] px-1">Priority</label>
-              <div className="grid grid-cols-3 gap-3">
-                {(["low", "medium", "high"] as Priority[]).map((p) => {
-                  const cfg = PRIORITY_CONFIG[p];
-                  const active = priority === p;
-                  return (
-                    <button
-                      key={p}
-                      type="button"
-                      onClick={() => setPriority(p)}
-                      className={`flex items-center justify-center gap-2 px-4 py-3 rounded-xl border text-sm font-bold transition-all
+              <Controller
+                control={control}
+                name="priorityCode"
+                render={({ field }) => (
+                  <div className="grid grid-cols-3 gap-3">
+                    {(["low","medium", "high"] as Priority[]).map((p) => {
+                      const cfg = PRIORITY_CONFIG[p];
+                      const active = field.value.toLowerCase() === p;
+                      return (
+                        <button
+                          key={p}
+                          type="button"
+                          onClick={() => field.onChange(p.toUpperCase())}
+                          className={`flex items-center justify-center gap-2 px-4 py-3 rounded-xl border text-sm font-bold transition-all
                         ${active ? `${cfg.bg} ${cfg.text} border-transparent` : "border-[#bec9c3]/30 text-[#3f4944] hover:bg-[#e5e9e5]"}`}
-                    >
-                      <span className={`w-2 h-2 rounded-full ${cfg.dot}`} />
-                      {cfg.label}
-                    </button>
-                  );
-                })}
-              </div>
+                        >
+                          <span className={`w-2 h-2 rounded-full ${cfg.dot}`} />
+                          {cfg.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              />
+              {errors.priorityCode && <p className="text-red-500 text-xs mt-2">{errors.priorityCode.message}</p>}
             </div>
 
             {/* Assign to */}
             <div className="space-y-3">
               <label className="block text-sm font-bold text-[#3f4944] px-1">Assign To</label>
-              <div className="flex gap-4">
-                {members.map((member: Member) => {
-                  const selected = assignee === member.id;
-                  return (
-                    <div key={member.name} onClick={() => setAssignee(member.id)} className={`flex flex-col items-center gap-2 cursor-pointer transition-opacity ${selected ? "" : "opacity-50 hover:opacity-100"}`}>
-                      <div className={`relative w-12 h-12 rounded-full ${selected ? "ring-2 ring-[#0f6e56] ring-offset-1" : ""}`}>
-                        <img src={member.avatarUrl!} alt={member.name} className="w-full h-full rounded-full object-cover" />
-                        {selected && (
-                          <div className="absolute -top-1 -right-1 bg-[#0f6e56] text-white w-5 h-5 rounded-full flex items-center justify-center">
-                            <span className="text-[10px] font-bold">✓</span>
+              <Controller
+                control={control}
+                name="assignedTo"
+                render={({ field }) => (
+                  <div className="flex gap-4">
+                    {members.map((member: Member) => {
+                      const selected = field.value === member.id;
+                      console.log(member.avatarUrl);
+                      return (
+                        <div key={member.name} onClick={() => field.onChange(member.id)} className={`flex flex-col items-center gap-2 cursor-pointer transition-opacity ${selected ? "" : "opacity-50 hover:opacity-100"}`}>
+                          <div className={`relative w-12 h-12 rounded-full ${selected ? "ring-2 ring-[#0f6e56] ring-offset-1" : ""}`}>
+                            <img src={member.avatarUrl!} alt={member.name} className="w-full h-full rounded-full object-cover" />
+                            {selected && (
+                              <div className="absolute -top-1 -right-1 bg-[#0f6e56] text-white w-5 h-5 rounded-full flex items-center justify-center">
+                                <span className="text-[10px] font-bold">✓</span>
+                              </div>
+                            )}
                           </div>
-                        )}
-                      </div>
-                      <span className={`text-xs font-bold ${selected ? "text-[#0f6e56]" : "text-[#3f4944]"}`}>{member.name}</span>
-                    </div>
-                  );
-                })}
-              </div>
+                          <span className={`text-xs font-bold ${selected ? "text-[#0f6e56]" : "text-[#3f4944]"}`}>{member.name}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              />
+              {errors.assignedTo && <p className="text-red-500 text-xs mt-2">{errors.assignedTo.message}</p>}
             </div>
 
             {/* Notes */}
             <div className="space-y-2">
               <label className="block text-sm font-bold text-[#3f4944] px-1">Notes</label>
-              <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} placeholder="Additional details about the task..." className="w-full p-4 bg-[#f4f5f4] border-none rounded-xl focus:ring-2 focus:ring-[#0f6e56] focus:bg-white transition-all text-[#181d1a] placeholder:text-[#bec9c3] resize-none outline-none" />
+              <textarea {...register("notes")} rows={3} placeholder="Additional details about the task..." className="w-full p-4 bg-[#f4f5f4] border-none rounded-xl focus:ring-2 focus:ring-[#0f6e56] focus:bg-white transition-all text-[#181d1a] placeholder:text-[#bec9c3] resize-none outline-none" />
             </div>
           </div>
 
