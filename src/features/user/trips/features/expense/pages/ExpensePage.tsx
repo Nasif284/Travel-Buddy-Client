@@ -148,59 +148,6 @@ export const CATEGORY_CONFIG: Record<CategoryCode, CatConfig> = {
   },
 };
 
-const INITIAL_DATA: GetExpensesResponseDTO = {
-  expenses: [
-    {
-      id: "exp-001",
-      title: "Airport Shuttle to Seminyak",
-      description: null,
-      amount: 4200,
-      expenseDate: new Date("2025-06-11T16:30:00"),
-      category: { code: "TRANSPORT", name: "Transport" },
-      splitMethod: { code: "EQUAL", name: "Equal" },
-      paidBy: { id: "raj", name: "Raj" },
-      participants: [
-        { memberId: "raj", name: "Raj", amount: 1050, percentage: 25, shares: 1 },
-        { memberId: "ananya", name: "Ananya", amount: 1050, percentage: 25, shares: 1 },
-        { memberId: "vikram", name: "Vikram", amount: 1050, percentage: 25, shares: 1 },
-        { memberId: "me", name: "Me", amount: 1050, percentage: 25, shares: 1 },
-      ],
-    },
-    {
-      id: "exp-002",
-      title: "Villa Down Payment",
-      description: null,
-      amount: 45000,
-      expenseDate: new Date("2025-06-09T11:20:00"),
-      category: { code: "ACCOMMODATION", name: "Accommodation" },
-      splitMethod: { code: "CUSTOM", name: "Custom" },
-      paidBy: { id: "me", name: "Me" },
-      participants: [
-        { memberId: "me", name: "Me", amount: 15000, percentage: null, shares: null },
-        { memberId: "raj", name: "Raj", amount: 12000, percentage: null, shares: null },
-        { memberId: "ananya", name: "Ananya", amount: 10000, percentage: null, shares: null },
-        { memberId: "vikram", name: "Vikram", amount: 8000, percentage: null, shares: null },
-      ],
-    },
-    {
-      id: "exp-003",
-      title: "Dinner at La Favela",
-      description: null,
-      amount: 12800,
-      expenseDate: new Date("2025-06-08T21:00:00"),
-      category: { code: "FOOD", name: "Food" },
-      splitMethod: { code: "EQUAL", name: "Equal" },
-      paidBy: { id: "ananya", name: "Ananya" },
-      participants: [
-        { memberId: "raj", name: "Raj", amount: 3200, percentage: 25, shares: 1 },
-        { memberId: "ananya", name: "Ananya", amount: 3200, percentage: 25, shares: 1 },
-        { memberId: "vikram", name: "Vikram", amount: 3200, percentage: 25, shares: 1 },
-        { memberId: "me", name: "Me", amount: 3200, percentage: 25, shares: 1 },
-      ],
-    },
-  ],
-};
-
 export default function ExpensesPage() {
   const [expandedId, setExpandedId] = useState<string | null>("exp-001");
   const [editingExp, setEditingExp] = useState<ExpenseResponseDTO | null>(null);

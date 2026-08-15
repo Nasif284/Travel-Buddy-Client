@@ -7,6 +7,7 @@ import { TablePagination } from "@/src/components/table/TablePagination";
 import { useGetGroup } from "../hooks/hooks";
 import { GroupMember } from "../interfaces/interfaces";
 import { ConfigDetails } from "../components/TripOverview";
+import Link from "next/link";
 
 const Icons = {
   location: (
@@ -81,7 +82,7 @@ export default function TripDetailPage() {
   const total = members.length;
   const totalPages = Math.ceil(total / LIMIT);
   const paginated = members.slice((page - 1) * LIMIT, page * LIMIT);
-  
+
   const columns: Column<GroupMember>[] = [
     {
       key: "name",
@@ -143,17 +144,9 @@ export default function TripDetailPage() {
       align: "right",
       render: (row) => (
         <div className="flex items-center justify-end gap-1">
-          {/* View profile */}
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              router.push(`/admin/users/${row.id}`);
-            }}
-            title="View Profile"
-            className="p-1.5 text-stone-400 hover:text-stone-900 hover:bg-stone-200/50 rounded-lg transition-all"
-          >
-            {Icons.eye}
-          </button>
+          <Link href={`/admin/trips/${row.id}`} className="bg-[#005440]/5 hover:bg-[#005440]/10 text-[#005440] px-3 py-1.5 rounded-lg text-xs font-bold transition-colors whitespace-nowrap">
+            View Profile
+          </Link>
         </div>
       ),
     },
@@ -165,7 +158,6 @@ export default function TripDetailPage() {
         <img src={trip.coverUrl} alt={trip.name} className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex flex-col justify-end p-8">
           <div className="flex items-center gap-3 mb-1">
-            <span className="bg-[#005440] text-white text-[10px] font-bold px-2 py-0.5 rounded tracking-widest uppercase">Active Project</span>
             <span className="text-white/80 text-sm font-medium tracking-tight">{trip.destination}</span>
           </div>
           <h2 className="text-4xl font-black text-white tracking-tight">{trip.name}</h2>

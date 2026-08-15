@@ -1,12 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { UserWithDetails } from "../../../../Interfaces/users.interface";
 import Link from "next/link";
 import { LocationIcon } from "@/src/assets/icons";
+import { useGetConversationId } from "../../chat/hooks/hooks";
+import { useRouter } from "next/navigation";
 
 export default function TravelerCard({ traveler, isNearBy = false }: { readonly traveler: UserWithDetails; readonly isNearBy: boolean }) {
   const [requestSent, setRequestSent] = useState(false);
+  const [messageSent, setMessageSent] = useState(false);
+
+  const router = useRouter();
+  const { data, isLoading, isSuccess } = useGetConversationId(traveler.id, messageSent);
+  useEffect(() => {
+    if (!isSuccess || !data) return;
+    const conversationId = data.data.conversationId;
+   router.push(`/messages?conversationId=${conversationId}`);
+  }, [isSuccess, data, router]);
+
   return (
     <div className="bg-white rounded-2xl overflow-hidden flex flex-col group transition-all duration-300 shadow-sm">
       <div className="h-[200px] relative ">
@@ -47,13 +59,15 @@ export default function TravelerCard({ traveler, isNearBy = false }: { readonly 
         </div>
 
         <div className="mt-auto flex gap-3">
-          <Link href={`/profile/${traveler.id}`} className="flex-1 items-center text-center py-2 text-[12px] font-bold text-[#005440] hover:bg-[#e5e9e5] rounded-xl transition-colors">View profile</Link>
+          <Link href={`/profile/${traveler.id}`} className="flex-1 items-center text-center py-2 text-[12px] font-bold text-[#005440] hover:bg-[#e5e9e5] rounded-xl transition-colors">
+            View profile
+          </Link>
           {requestSent ? (
             <button disabled className="flex-1 px-2  text-[12px] font-bold bg-[#e0e3e0] text-[#a4a2a2] cursor-not-allowed rounded-xl flex items-center justify-center">
               Request sent
             </button>
           ) : (
-            <button onClick={() => setRequestSent(true)} className="flex-1 text-[12px] font-bold bg-[#0f6e56] text-white rounded-xl hover:bg-[#005440] transition-all active:scale-95">
+            <button disabled={isLoading} onClick={() => setMessageSent(true)} className="flex-1 text-[12px] font-bold bg-[#0f6e56] text-white rounded-xl hover:bg-[#005440] transition-all active:scale-95">
               Message
             </button>
           )}

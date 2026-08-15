@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useEditTravelStyle, useSetTravelStyle } from "../hooks/onboarding.hooks";
-import { useAuthMe } from "../../auth/hooks/auth.hooks";
 import { capitalizeFirstLetter } from "@/src/utils/capitalizseFirstLetter";
 import { useGetMe } from "../../matches-connections/hooks/users.hooks";
 import Link from "next/link";
@@ -39,7 +38,6 @@ export default function TravelStylePage() {
   }
   useEffect(() => {
     if (!me) return;
-    console.log(me);
     setTravelStyle(capitalizeFirstLetter(me.travelType) as TravelStyle);
     setInterests(new Set(me.interests.map((i) => capitalizeFirstLetter(i)) as Interest[]));
     setPersonality(capitalizeFirstLetter(me.travelPersonality) as Personality);
@@ -47,7 +45,7 @@ export default function TravelStylePage() {
   }, [me]);
   function handleContinue() {
     const data = { travelType: travelStyle.toLowerCase(), interests: [...interests], travelPersonality: personality.toLowerCase(), matchWith: matchPref.toLowerCase() };
-    if (me.onboardingCompleted) {
+    if (me?.onboardingCompleted) {
       editStyle.mutate(data);
     } else {
       setStyle.mutate(data);

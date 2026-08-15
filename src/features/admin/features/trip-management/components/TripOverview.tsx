@@ -41,9 +41,8 @@ export function ConfigDetails({ trip }: { trip: GroupData }) {
     },
     {
       label: "Budget Style",
-      icon: <span className="text-[#005440]">{Icons.payments}</span>,
       value: (
-        <div className="flex flex-wrap gap-2 mt-1">
+        <div className="flex flex-wrap gap-2">
           <span className="bg-[#c9eadb] text-[#4d6b5f] text-[11px] font-bold px-3 py-1.5 rounded-md capitalize">{trip.budgetStyle}</span>
         </div>
       ),
@@ -63,7 +62,7 @@ export function ConfigDetails({ trip }: { trip: GroupData }) {
 
   return (
     <section className="bg-white rounded-xl p-8 shadow-sm border border-[#bec9c3]/15">
-      <h3 className="text-[#1c1c1a] font-bold text-xl tracking-tight mb-8">Configuration Details</h3>
+      <h3 className="text-[#1c1c1a] font-bold text-xl tracking-tight mb-8">Trip Details</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         {items.map(({ label, icon, value, noText }) => (
           <div key={label}>
@@ -75,7 +74,7 @@ export function ConfigDetails({ trip }: { trip: GroupData }) {
               </div>
             ) : (
               <div className="flex items-center gap-3 text-[#1c1c1a] font-semibold text-sm">
-                {icon}
+                {icon }
                 <span>{value}</span>
               </div>
             )}

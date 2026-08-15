@@ -37,6 +37,7 @@ const GroupHeader = () => {
       </section>
     );
   }
+  console.log(group)
   return (
     <section className="relative w-full h-[180px] rounded-xl overflow-hidden mb-8">
       <img src={group.coverUrl} alt="Bali Destination" className="absolute inset-0 w-full h-full object-cover" />
@@ -59,10 +60,10 @@ const GroupHeader = () => {
                   year:"2-digit"
                 })}
               </span>
-              <span className="flex items-center gap-1">{Icons.location} Bali, Indonesia</span>
+              <span className="flex items-center gap-1">{Icons.location} { group.destination}</span>
             </div>
           </div>
-          <button className="bg-white/10 hover:bg-white/20 border border-white/30 backdrop-blur-md text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2">Invite member {Icons.plus}</button>
+          {/* <button className="bg-white/10 hover:bg-white/20 border border-white/30 backdrop-blur-md text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2">Invite member {Icons.plus}</button> */}
         </div>
       </div>
     </section>

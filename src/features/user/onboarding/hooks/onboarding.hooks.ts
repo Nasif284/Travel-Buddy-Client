@@ -47,7 +47,13 @@ export function useSetTravelStyle() {
   return useMutation({
     mutationFn: (data: TravelStyleData) => onboardingService.setTravelStyle(data),
     onSuccess: (res) => {
-      router.push("/onboarding/travel-plan");
+      const redirect = sessionStorage.getItem("postLoginRedirect");
+      if (redirect) {
+        sessionStorage.removeItem("postLoginRedirect");
+        router.replace(redirect);
+      } else {
+        router.push("/onboarding/travel-plan");
+      }
       setOnboarding(4, false);
       toast.success(res.message);
     },

@@ -1,10 +1,16 @@
 "use client";
 
 import { NotificationsIcon } from "@/src/assets/icons";
-import { useAuthStore } from "@/src/store/auth.store";
+import { useAdminAuthStore } from "@/src/store/adminAuth.store";
+import { useEffect, useState } from "react";
 
 export default function AdminTopBar() {
-  const user = useAuthStore((state) => state.user);
+  const admin = useAdminAuthStore((state) => state.admin);
+  console.log(admin,"admin")
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => {
+      setMounted(true);
+    }, []);
   return (
     <header className="h-14 fixed top-0 right-0 left-60 z-10 bg-white/90 backdrop-blur-xl border-b border-stone-200/50 flex items-center justify-between px-8">
       <div className="flex items-center gap-6">
@@ -29,12 +35,12 @@ export default function AdminTopBar() {
 
         <button className="flex items-center gap-3 pl-2 pr-1 py-1 rounded-full hover:bg-stone-50 transition-colors">
           <div className="flex flex-col items-end">
-            <span className="text-xs font-bold text-[#1c1c1a] leading-tight">{user?.fullName}</span>
-            <span className="text-[10px] text-[#3f4944] leading-none">Super Admin</span>
+            <span className="text-xs font-bold text-[#1c1c1a] leading-tight">{mounted ? admin?.fullName : ""}</span>
+            <span className="text-[10px] text-[#3f4944] leading-none">{mounted ? admin?.role : ""}</span>
           </div>
-          <div className="w-8 h-8 rounded-full overflow-hidden bg-[#e5e2de]">
+          {/* <div className="w-8 h-8 rounded-full overflow-hidden bg-[#e5e2de]">
             <img alt="Arjun Menon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD5k67JcfTSiPd1eH5sTwB1EjZjrfV4NcC95QGGaNjiybWJlvRp6sq54Wul4ErhJrd7QKGPcpXuX6qzZqohzK0nfV75WMiIXTCHeKEoY_r--rQgz5GkCxvNCCwglQOpY_Cfa0WHayAS_gHZUbP_l1Z6Iim3Uq-TuyvoTpvc0i418ItfLJ5FUw59qxf_QGwecWLP1T_ZSEa2c1X-7qugBQELhVSud7HdGqQpaZIVT6TWGev_Stfc2Pu37roSmjnz-4I1kCLWr5n6prw" className="w-full h-full object-cover" />
-          </div>
+          </div> */}
         </button>
       </div>
     </header>

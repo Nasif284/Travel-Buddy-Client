@@ -4,7 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAdminLogout } from "../features/auth/hooks/admin-auth.hooks";
 import { useAuthStore } from "@/src/store/auth.store";
-import { ExploreIcon, GroupIcon, LogoutIcon } from "@/src/assets/icons";
+import { AdminIcon, AssessmentIcon, ExploreIcon, GroupIcon, LogoutIcon } from "@/src/assets/icons";
+import { useEffect, useState } from "react";
+import { useAdminAuthStore } from "@/src/store/adminAuth.store";
 
 type NavItem = {
   href: string;
@@ -16,16 +18,21 @@ const navItems: NavItem[] = [
   // { href: "/admin/dashboard", label: "Dashboard", icon: <Icons.DashboardIcon /> },
   { href: "/admin/users", label: "All Users", icon: <GroupIcon /> },
   { href: "/admin/trips", label: "All Trips", icon: <ExploreIcon /> },
+  { href: "/admin/verifications", label: "Verifications", icon: <AssessmentIcon/> },
   // { href: "/admin/reports", label: "Reports", icon: <Icons.AssessmentIcon /> },
   // { href: "/admin/analytics", label: "Analytics", icon: <Icons.MonitoringIcon /> },
-  // { href: "/admin/admins", label: "Admins", icon: <Icons.AdminIcon /> },
+  { href: "/admin/admins", label: "Admins", icon: <AdminIcon /> },
 ];
 
 export default function AdminSidebar() {
   const pathname = usePathname();
   const logout = useAdminLogout();
-  const user = useAuthStore((state) => state.user);
-  console.log(user)
+  const admin = useAdminAuthStore((state) => state.admin);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   const handleLogout = () => {
     logout.mutate();
   };
@@ -41,8 +48,8 @@ export default function AdminSidebar() {
         <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5">
           <div className="w-10 h-10 rounded-lg bg-[#0f6e56] flex items-center justify-center text-[#9aedcf] font-bold text-sm">AM</div>
           <div className="flex flex-col">
-            <span className="text-sm font-semibold text-white leading-none">{user?.fullName}</span>
-            <span className="text-[11px] text-stone-400 mt-1">Super Admin</span>
+            <span className="text-sm font-semibold text-white leading-none">{mounted ? admin?.fullName : ""}</span>
+            <span className="text-[11px] text-stone-400 mt-1">{mounted ? admin?.role : ""}</span>
           </div>
         </div>
       </div>
@@ -50,7 +57,7 @@ export default function AdminSidebar() {
       {/* Nav */}
       <nav className="flex-1 px-3 overflow-y-auto space-y-1 scrollbar-hide">
         {navItems.map((item) => {
-          const isActive = pathname === item.href;
+          const isActive = pathname.startsWith(item.href);
           return (
             <Link key={item.href} href={item.href} className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium tracking-tight transition-all duration-200 ${isActive ? "border-l-4 border-[#0f6e56] text-[#0f6e56] bg-[#0f6e56]/10 font-bold pl-2" : "text-stone-400 hover:text-white hover:bg-stone-800/50"}`}>
               {item.icon}

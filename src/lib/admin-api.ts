@@ -26,7 +26,7 @@ adminApi.interceptors.response.use(
 
         return adminApi(originalRequest);
       } catch {
-        window.location.href = "/login";
+        window.location.href = "/admin/login";
       }
     }
 

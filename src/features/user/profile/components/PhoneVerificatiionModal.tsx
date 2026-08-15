@@ -107,7 +107,6 @@ export default function PhoneVerificationModal({ onClose }: PhoneVerificationMod
     }
     setOtpError(undefined);
     await verifyOtp.mutateAsync({ phone: fullPhone, otp: otpValue });
-    onVerified?.(fullPhone);
     onClose();
   }
 

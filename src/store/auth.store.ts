@@ -7,6 +7,7 @@ type User = {
   email: string;
 };
 
+
 type AuthStore = {
   user: User | null;
   isAuthenticated: boolean;

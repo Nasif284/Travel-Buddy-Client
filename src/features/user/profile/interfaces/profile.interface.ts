@@ -99,3 +99,30 @@ export type Step = "phone" | "otp";
 export interface PhoneVerificationModalProps {
   onClose: () => void;
 }
+
+
+export type DocType = "passport" | "national_id" | "drivers_license";
+export type UploadStep = "select_type" | "upload_front" | "upload_back" | "review" | "success";
+
+export interface UploadedFile {
+  file: File;
+  preview: string;
+  side: "front" | "back";
+}
+
+export const ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp", "application/pdf"];
+export const MAX_SIZE_MB = 10;
+
+
+export interface UploadZoneProps {
+  side: "front" | "back";
+  file: UploadedFile | null;
+  onFile: (file: File, side: "front" | "back") => void;
+  onRemove: (side: "front" | "back") => void;
+}
+
+
+export interface DocumentUploadModalProps {
+  onClose: () => void;
+  onSuccess?: (docType: DocType) => void;
+}

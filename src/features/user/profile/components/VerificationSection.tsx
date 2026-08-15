@@ -1,6 +1,9 @@
 "use client";
+
 import { useState } from "react";
+import DocumentUploadModal from "./DocumentUploadModal";
 import PhoneVerificationModal from "./PhoneVerificatiionModal";
+import { useGetDocVerificationStatus } from "../hooks/profile.hooks";
 
 const ShieldCheck = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -15,13 +18,6 @@ const PhoneIcon = () => (
   </svg>
 );
 
-const CheckCircle = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-    <polyline points="22 4 12 14.01 9 11.01" />
-  </svg>
-);
-
 const BadgeIcon = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <rect x="2" y="7" width="20" height="14" rx="2" />
@@ -31,18 +27,113 @@ const BadgeIcon = () => (
   </svg>
 );
 
+const CheckCircle = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+    <polyline points="22 4 12 14.01 9 11.01" />
+  </svg>
+);
+
+const ClockIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10" />
+    <polyline points="12 6 12 12 16 14" />
+  </svg>
+);
+
+type IdVerificationStatus = "not_submitted" | "processing" | "under_review" | "approved" | "rejected" | "resubmission_requested";
 interface VerificationSectionProps {
-  isPhoneVerified?: boolean;
-  phone?: string | null;
+  phoneVerified?: boolean;
+  verifiedPhone?: string;
 }
 
-const VerificationSection = ({ isPhoneVerified, phone }: VerificationSectionProps) => {
-  const [modalOpen, setModalOpen] = useState(false);
+export default function VerificationSection({ phoneVerified = false, verifiedPhone = "" }: VerificationSectionProps) {
+  const [phoneModalOpen, setPhoneModalOpen] = useState(false);
+  const [docModalOpen, setDocModalOpen] = useState(false);
+  const { data: docVerificationData, isLoading } = useGetDocVerificationStatus();
+  const idStatus = (docVerificationData?.data?.status?.code as IdVerificationStatus) ?? "not_submitted";
+  
+
+
+  function handleDocSuccess() {
+    // setIdStatus("pending");
+  }
 
   function maskPhone(phone: string): string {
     if (!phone) return "+1 ••• ••• 42";
     const last3 = phone.slice(-3);
     return `${phone.slice(0, 3)} ••• ••• ${last3}`;
+  }
+
+const idStatusConfig: Record<
+  IdVerificationStatus,
+  {
+    label: string;
+    sublabel: string;
+    actionLabel: string | null;
+    itemClass: string;
+    iconClass: string;
+    badgeClass: string;
+  }
+> = {
+  not_submitted: {
+    label: "ID not verified",
+    sublabel: "Submit a document to verify your identity",
+    actionLabel: "Verify now",
+    itemClass: "",
+    iconClass: "bg-stone-100 text-stone-400",
+    badgeClass: "",
+  },
+
+  processing: {
+    label: "Documents processing",
+    sublabel: "We're extracting information from your documents.",
+    actionLabel: null,
+    itemClass: "",
+    iconClass: "bg-blue-100 text-blue-600",
+    badgeClass: "bg-blue-100 text-blue-600",
+  },
+
+  under_review: {
+    label: "Under review",
+    sublabel: "Your documents are being reviewed by our team.",
+    actionLabel: null,
+    itemClass: "",
+    iconClass: "bg-amber-100 text-amber-600",
+    badgeClass: "bg-amber-100 text-amber-600",
+  },
+
+  approved: {
+    label: "ID verified",
+    sublabel: "Your identity has been successfully verified.",
+    actionLabel: "Update",
+    itemClass: "",
+    iconClass: "bg-[#0f6e56]/10 text-[#005440]",
+    badgeClass: "bg-[#c9eadb] text-[#005440]",
+  },
+
+  rejected: {
+    label: "Verification rejected",
+    sublabel: "Your documents couldn't be verified.",
+    actionLabel: "Resubmit",
+    itemClass: "",
+    iconClass: "bg-[#ffdad6] text-[#ba1a1a]",
+    badgeClass: "bg-[#ffdad6] text-[#ba1a1a]",
+  },
+
+  resubmission_requested: {
+    label: "Resubmission required",
+    sublabel: "Please upload clearer or updated documents.",
+    actionLabel: "Resubmit",
+    itemClass: "",
+    iconClass: "bg-orange-100 text-orange-600",
+    badgeClass: "bg-orange-100 text-orange-600",
+  },
+};
+
+  const idCfg = idStatusConfig[idStatus];
+  if (isLoading) {
+    return <h1>Loading...</h1>
   }
 
   return (
@@ -54,16 +145,16 @@ const VerificationSection = ({ isPhoneVerified, phone }: VerificationSectionProp
         Verification Status
       </h2>
 
-      <div className="flex flex-wrap items-center gap-10">
+      <div className="flex flex-wrap items-start gap-8">
         <div className="flex items-center gap-3">
           <div
-            className={`w-10 h-10 rounded-full flex items-center justify-center
-            ${isPhoneVerified ? "bg-[#0f6e56]/10 text-[#005440]" : "bg-stone-100 text-stone-400"}`}
+            className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0
+            ${phoneVerified ? "bg-[#0f6e56]/10 text-[#005440]" : "bg-stone-100 text-stone-400"}`}
           >
             <PhoneIcon />
           </div>
           <div>
-            {isPhoneVerified ? (
+            {phoneVerified ? (
               <>
                 <p className="text-sm font-bold text-[#005440] flex items-center gap-1">
                   Phone verified
@@ -72,8 +163,8 @@ const VerificationSection = ({ isPhoneVerified, phone }: VerificationSectionProp
                   </span>
                 </p>
                 <div className="flex items-center gap-2">
-                  <p className="text-xs text-[#3f4944]">{maskPhone(phone!)}</p>
-                  <button onClick={() => setModalOpen(true)} className="text-xs text-[#005440] font-semibold hover:underline">
+                  <p className="text-xs text-[#3f4944]">{maskPhone(verifiedPhone)}</p>
+                  <button onClick={() => setPhoneModalOpen(true)} className="text-xs text-[#005440] font-semibold hover:underline">
                     Update
                   </button>
                 </div>
@@ -81,7 +172,7 @@ const VerificationSection = ({ isPhoneVerified, phone }: VerificationSectionProp
             ) : (
               <>
                 <p className="text-sm font-bold text-stone-500">Phone not verified</p>
-                <button onClick={() => setModalOpen(true)} className="text-xs text-[#005440] font-semibold hover:underline">
+                <button onClick={() => setPhoneModalOpen(true)} className="text-xs text-[#005440] font-semibold hover:underline">
                   Verify now
                 </button>
               </>
@@ -90,22 +181,39 @@ const VerificationSection = ({ isPhoneVerified, phone }: VerificationSectionProp
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center text-stone-400">
-            <BadgeIcon />
-          </div>
+          <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${idCfg.iconClass}`}>{["processing", "under_review"].includes(idStatus) ? <ClockIcon /> : <BadgeIcon />}</div>
           <div>
-            <p className="text-sm font-bold text-stone-500">ID not verified</p>
-            <a href="#" className="text-xs text-[#005440] font-semibold hover:underline">
-              Verify now
-            </a>
+            <p
+              className={`text-sm font-bold flex items-center gap-1.5
+              ${idStatus === "approved" ? "text-[#005440]" : idStatus === "processing" || idStatus === "under_review" ? "text-amber-600" : idStatus === "rejected" ? "text-[#ba1a1a]" : "text-stone-500"}`}
+            >
+              {idCfg.label}
+              {idStatus === "approved" && (
+                <span className="text-[#005440]">
+                  <CheckCircle />
+                </span>
+              )}
+              {idStatus === "processing" ||
+                (idStatus === "under_review" && (
+                  <span className="flex gap-0.5 ml-1">
+                    {[0, 1, 2].map((i) => (
+                      <span key={i} className="w-1 h-1 bg-amber-500 rounded-full animate-bounce" style={{ animationDelay: `${i * 0.15}s` }} />
+                    ))}
+                  </span>
+                ))}
+            </p>
+            <p className="text-xs text-[#3f4944] max-w-[200px] leading-relaxed">{idCfg.sublabel}</p>
+            {idCfg.actionLabel && (
+              <button onClick={() => setDocModalOpen(true)} className="text-xs text-[#005440] font-semibold hover:underline mt-0.5 block">
+                {idCfg.actionLabel}
+              </button>
+            )}
           </div>
         </div>
       </div>
 
-      {/* Modal */}
-      {modalOpen && <PhoneVerificationModal onClose={() => setModalOpen(false)} />}
+      {phoneModalOpen && <PhoneVerificationModal onClose={() => setPhoneModalOpen(false)}  />}
+      {docModalOpen && <DocumentUploadModal onClose={() => setDocModalOpen(false)} onSuccess={handleDocSuccess} />}
     </>
   );
-};
-
-export default VerificationSection;
+}

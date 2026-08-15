@@ -1,19 +1,20 @@
 import { adminService } from "../services/admin-auth.services";
-import { useAuthStore } from "@/src/store/auth.store";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { ApiError } from "@/src/types/types";
 import { AdminLoginInput } from "../interfaces/admin-auth.interfaces";
+import { useAdminAuthStore } from "@/src/store/adminAuth.store";
 
 export function useAdminLogin() {
-  const setUser = useAuthStore((state) => state.setUser);
+  const setAdmin = useAdminAuthStore((state) => state.setAdmin);
   const router = useRouter();
   return useMutation({
     mutationFn: (data: AdminLoginInput) => adminService.login(data),
     onSuccess: (res) => {
-      setUser(res.data);
+      console.log(res,"response")
+      setAdmin(res.data);
       toast.success(res.message);
       router.push("/admin/users");
     },
@@ -25,7 +26,7 @@ export function useAdminLogin() {
 
 export function useAdminLogout() {
   const router = useRouter();
-  const logout = useAuthStore((state) => state.logout);
+  const logout = useAdminAuthStore((state) => state.logout);
   return useMutation({
     mutationFn: () => adminService.logout(),
     onSuccess: () => {

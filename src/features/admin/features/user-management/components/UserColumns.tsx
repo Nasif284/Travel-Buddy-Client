@@ -6,6 +6,7 @@ import { UserStatusBadge } from "./UserStatusBadge";
 import type { UserAction } from "./UsersActionModal";
 import { User, UserStatus } from "../interfaces/users.interfaces";
 import { VerifiedIcon } from "@/src/assets/icons";
+import Link from "next/link";
 
 export function getUserActions(user: User, onAction: (userId: string, action: UserAction) => void): ActionMenuItem[] {
   const items: ActionMenuItem[] = [];
@@ -92,7 +93,14 @@ export function buildUserColumns(openMenuId: string | null, onToggleMenu: (id: s
       key: "action",
       header: "Action",
       width: "60px",
-      render: (user) => <TableActionMenu rowId={user.id} openId={openMenuId} onToggle={onToggleMenu} items={getUserActions(user, onAction)} />,
+      render: (user) => (
+        <div className="flex gap-2">
+          <Link href={`/admin/users/${user.id}`} className="bg-[#005440]/5 hover:bg-[#005440]/10 text-[#005440] px-3 py-1.5 rounded-lg text-xs font-bold transition-colors whitespace-nowrap">
+            View Profile
+          </Link>
+          <TableActionMenu rowId={user.id} openId={openMenuId} onToggle={onToggleMenu} items={getUserActions(user, onAction)} />
+        </div>
+      ),
     },
   ];
 }

@@ -3,6 +3,7 @@ import type { Config } from "tailwindcss";
 const config: Config = {
   content: ["./src/**/*.{js,ts,jsx,tsx,mdx}", "./pages/**/*.{js,ts,jsx,tsx,mdx}", "./components/**/*.{js,ts,jsx,tsx,mdx}", "./app/**/*.{js,ts,jsx,tsx,mdx}"],
   darkMode: "class",
+  
   theme: {
     extend: {
       colors: {
@@ -66,9 +67,11 @@ const config: Config = {
         body: ["Inter", "sans-serif"],
         label: ["Inter", "sans-serif"],
       },
+      
     },
   },
   plugins: [],
+  
 };
 
 export default config;

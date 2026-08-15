@@ -138,7 +138,7 @@ export default function SettingsPage() {
           <div className="max-w-6xl mx-auto space-y-8">
             {/* ── Verification Status ───────────────────────────────── */}
             <Card>
-              <VerificationSection phone={settings.phone} isPhoneVerified={settings.isPhoneVerified} />
+              <VerificationSection verifiedPhone={settings.phone!} phoneVerified={settings.isPhoneVerified} />
             </Card>
 
             {/* ── Privacy Controls ──────────────────────────────────── */}

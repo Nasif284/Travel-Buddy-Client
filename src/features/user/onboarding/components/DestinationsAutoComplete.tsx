@@ -3,7 +3,7 @@
 import { DestinationSuggestion, PlaceData, SuggestionInterface } from "../interfaces/interfaces";
 import { useGetPlacesSuggestion } from "../hooks/onboarding.hooks";
 import { useDebounce } from "@/src/hooks/debounce.hook";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { onboardingService } from "../services/onboarding.service";
 
 interface Props {
@@ -14,7 +14,7 @@ interface Props {
 
 export default function DestinationAutocomplete({ value, onChange, onSelect }: Props) {
   const debouncedSuggestion = useDebounce(value);
-  const [isSelected, setIsSelected] = useState(false);
+  const [isSelected, setIsSelected] = useState(!!value);
   const { data, isLoading: loading } = useGetPlacesSuggestion(debouncedSuggestion, !isSelected);
   const suggestion = !isSelected ? (data?.suggestions?.[0] ?? null) : null;
   const handleSelect = async (selected: SuggestionInterface) => {

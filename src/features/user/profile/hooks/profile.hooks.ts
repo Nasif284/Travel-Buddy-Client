@@ -147,3 +147,25 @@ export function useCountdown(seconds: number) {
 
   return { formatted, expired, start };
 }
+
+export function useSubmitVerifyDocs() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: FormData) => ProfileServices.submitVerificationDocs(data),
+    onSuccess: (res) => {
+      toast.success(res.message);
+      queryClient.invalidateQueries({
+        queryKey: ["doc_verification_status"],
+      });
+    },
+    onError: (error: AxiosError<ApiError>) => {
+      toast.error(error.response?.data?.error?.message || "Something went wrong");
+    },
+  });
+}
+export function useGetDocVerificationStatus() {
+  return useQuery({
+    queryKey: ["doc_verification_status"],
+    queryFn: () => ProfileServices.getDocVerifyStatus(),
+  });
+}

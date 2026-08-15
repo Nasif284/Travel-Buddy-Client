@@ -79,12 +79,12 @@ export default function TripCard({ trip, onEdit, onDelete,isActive }: Readonly<T
           })}
         </p>
 
-        <div className="flex mb-2 justify-between items-end">
-          <div></div>
-          <Link href={`/dashboard/trips/${trip.id}`} className="text-[#0f6e56] font-bold text-sm flex items-center gap-1 group-hover:gap-2 transition-all">
-            View memories <ArrowIcon />
-          </Link>
-        </div>
+          {/* <div className="flex mb-2 justify-between items-end">
+            <div></div>
+            <Link href={`/dashboard/trips/${trip.id}`} className="text-[#0f6e56] font-bold text-sm flex items-center gap-1 group-hover:gap-2 transition-all">
+              View memories <ArrowIcon />
+            </Link>
+          </div> */}
       </div>
     </div>
   );

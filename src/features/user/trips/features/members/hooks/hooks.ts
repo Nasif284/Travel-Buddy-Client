@@ -88,8 +88,8 @@ export function useLeaveGroup() {
   const router = useRouter();
   return useMutation({
     mutationFn: (groupId :string) => memberServices.leaveGroup(groupId),
-    onSuccess: (res) => {
-      queryClient.invalidateQueries({ queryKey: ["group_members"] });
+    onSuccess: async (res) => {
+      await Promise.all([queryClient.invalidateQueries({ queryKey: ["group_members"] }), queryClient.invalidateQueries({ queryKey: ["active_groups"] })]);
       toast.success(res.message);
       router.replace("/trips/groups");
     },

@@ -33,7 +33,6 @@ const budgetOptions = [
 ] as const;
 
 export default function TravelPlanPage() {
-   
   const [search, setSearch] = useState("");
   const tripPlan = useCreateOnboardingTripPlan();
   const {
@@ -53,8 +52,8 @@ export default function TravelPlanPage() {
   const destination = watch("destination");
   const budgetCategory = watch("budgetStyle");
   const tripStyle = watch("travelStyleCode");
-    const today = new Date().toISOString().split("T")[0];
-    const dateFrom = watch("dateFrom");
+  const today = new Date().toISOString().split("T")[0];
+  const dateFrom = watch("dateFrom");
   const tripStyles = [
     {
       code: "adventure",
@@ -246,7 +245,7 @@ export default function TravelPlanPage() {
                   "Creating trip plan..."
                 ) : (
                   <>
-                    Create my plan 
+                    Create my plan
                     {arrowForward}
                   </>
                 )}
