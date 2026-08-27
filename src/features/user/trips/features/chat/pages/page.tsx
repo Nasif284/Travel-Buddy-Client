@@ -11,6 +11,7 @@ import { useChatSocket } from "@/src/features/user/chat/hooks/socketHooks";
 import { sendMessage } from "@/src/socket/chat/chat.socket";
 import { useAuthStore } from "@/src/store/auth.store";
 import { ChatMessageDTO } from "../interfaces/interfaces";
+import GroupCallSections from "../components/GroupCallSections";
 
 export default function GroupChatPage() {
   const currentUserId = useAuthStore((state) => state.user?.id);
@@ -60,12 +61,7 @@ export default function GroupChatPage() {
           </div>
         </div>
         <div className="flex items-center gap-1">
-          <HeaderAction label="Start voice call">
-            <CallIcon />
-          </HeaderAction>
-          <HeaderAction label="Start video call">
-            <VideoIcon />
-          </HeaderAction>
+          <GroupCallSections groupId={groupId} groupName={"Trip Group"} />
           <HeaderAction label="Search chat">
             <SearchIcon />
           </HeaderAction>

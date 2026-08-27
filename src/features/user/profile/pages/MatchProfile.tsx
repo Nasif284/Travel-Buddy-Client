@@ -107,13 +107,13 @@ export default function MatcProfile() {
               </section> */}
 
             {/* ── Tabs ──────────────────────────────────────────────────────── */}
-            <nav className="flex gap-8 border-b border-[#bec9c3]/30 mt-8 px-2">
+            {/* <nav className="flex gap-8 border-b border-[#bec9c3]/30 mt-8 px-2">
               {(["about", "trips", "reviews"] as Tab[]).map((tab) => (
                 <button key={tab} onClick={() => setActiveTab(tab)} className={`pb-3 text-lg font-headline capitalize transition-colors ${activeTab === tab ? "text-[#0f6e56] font-bold border-b-4 border-[#0f6e56] -mb-px" : "text-[#4d6b5f] font-semibold hover:text-[#0f6e56]"}`}>
                   {tab === "trips" ? "Travel plans" : tab.charAt(0).toUpperCase() + tab.slice(1)}
                 </button>
               ))}
-            </nav>
+            </nav> */}
 
             {/* ── About Tab ─────────────────────────────────────────────────── */}
             {activeTab === "about" && (

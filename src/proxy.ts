@@ -14,6 +14,9 @@ export function proxy(request: NextRequest) {
   const isAdminRoute = pathname.startsWith("/admin");
   const isUserProtected = pathname === "/" || pathname.startsWith("/profile") || pathname.startsWith("/trips") || pathname.startsWith("/chat");
 
+  if (pathname == "/admin") {
+    return NextResponse.redirect(new URL("/admin/dashboard", request.url));
+  }
   if (isUserAuth && userRefreshToken) {
     return NextResponse.redirect(new URL("/", request.url));
   }
@@ -35,7 +38,5 @@ export function proxy(request: NextRequest) {
   return NextResponse.next();
 }
 export const config = {
-  matcher: [
-    "/((?!api|_next/static|_next/image|favicon.ico).*)",
-  ],
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
 };

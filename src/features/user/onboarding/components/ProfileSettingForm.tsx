@@ -15,6 +15,7 @@ import { UpdateProfileData } from "../../profile/interfaces/profile.interface";
 import { capitalizeFirstLetter } from "@/src/utils/capitalizseFirstLetter";
 import { useGetMe } from "../../matches-connections/hooks/users.hooks";
 import { useAuthStore } from "@/src/store/auth.store";
+import LanguageSelect from "./LanguageSelect";
 const GENDER_OPTIONS = [
   {
     label: "Male",
@@ -455,17 +456,15 @@ const ProfileSettingForm = () => {
 
       <div className="space-y-2">
         <label className="block text-sm font-bold font-headline text-[#181d1a] tracking-wide">Languages</label>
-        <TagInput
+        <LanguageSelect
           value={languages}
-          placeholder="Add language..."
           onChange={(value) =>
             setValue("languages", value, {
               shouldValidate: true,
             })
           }
+          error={errors.languages?.message}
         />
-        <p className="text-xs text-[#6f7a74]">Press Enter or comma to add a language.</p>
-        {errors.languages && <p className="text-red-500 text-[12px]">{errors.languages.message}</p>}
       </div>
 
       <div className="flex items-center justify-end pt-8 border-t border-[#bec9c3]/10">

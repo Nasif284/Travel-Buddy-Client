@@ -17,7 +17,7 @@ export default function ItineraryPage() {
   const { id } = useParams();
   const { data: tripData, isLoading: loading } = useGetGroup(id as string);
   const { data, isLoading } = useGetItinerary(id as string);
-  const [aiModal, setAiModal] = useState(true);
+  const [aiModal, setAiModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState();
   const [dayModal, setDayModal] = useState<{ mode: "setup" | "edit" } | null>(null);
   const TRIP_START = tripData?.data?.dateFrom;
@@ -164,7 +164,7 @@ export default function ItineraryPage() {
           </button>
         </div>
       </div>
-            
+
       {/* ── Day content ─────────────────────────────────────────── */}
       <div className="flex-1 overflow-y-auto p-6 [&::-webkit-scrollbar]:hidden">
         {/* ── No itinerary for this day ───────────────────────── */}
@@ -175,6 +175,9 @@ export default function ItineraryPage() {
             <p className="text-[#3f4944] text-sm mb-8 max-w-xs leading-relaxed">{formatFullDate(selectedDate)} is currently empty. Set up this day to start adding activities.</p>
             <button onClick={() => setDayModal({ mode: "setup" })} className="flex items-center gap-2 bg-[#0f6e56] text-white px-6 py-3 rounded-xl font-bold text-sm hover:bg-[#005440] active:scale-95 transition-all shadow-md">
               {Icons.plus} Set up this day
+            </button>
+            <button onClick={() => setAiModal(true)} className="flex mt-3 items-center gap-2 bg-[#0f6e56] text-white px-6 py-3 rounded-xl font-bold text-sm hover:bg-[#005440] active:scale-95 transition-all shadow-md">
+              {Icons.plusSmall} Generate AI itinerary
             </button>
           </div>
         ) : (

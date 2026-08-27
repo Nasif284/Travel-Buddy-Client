@@ -1,12 +1,23 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Providers from "./provider";
 import { Toaster } from "sonner";
 export const metadata: Metadata = {
-  title: "Travel Buddy",
-  description: "Find your travel tribe. Connect with like-minded travelers, plan trips, and explore the world together.",
+  title: "TravelBuddy",
+  description: "Connect with travelers and plan trips together.",
+  applicationName: "TravelBuddy",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "TravelBuddy",
+  },
 };
 
+export const viewport: Viewport = {
+  themeColor: "#0f6e56",
+  width: "device-width",
+  initialScale: 1,
+};
 export default function RootLayout({
   children,
 }: Readonly<{

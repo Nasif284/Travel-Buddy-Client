@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useAuthMe } from "@/src/features/user/auth/hooks/auth.hooks";
 import { useAuthStore } from "@/src/store/auth.store";
 import { connectSocket, disconnectSocket } from "@/src/socket/socket";
+import LoadingSpinner from "../Loading";
 
 export default function AuthProvider({
   children,
@@ -68,7 +69,7 @@ export default function AuthProvider({
   const shouldRedirect = !me?.isVerified || !me?.onboardingCompleted;
 
   if (isLoading || shouldRedirect) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+    return <LoadingSpinner />;
   }
 
   return children;

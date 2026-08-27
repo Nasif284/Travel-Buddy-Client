@@ -3,9 +3,13 @@
 import { NotificationsIcon } from "@/src/assets/icons";
 import { useAdminAuthStore } from "@/src/store/adminAuth.store";
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
 export default function AdminTopBar() {
   const admin = useAdminAuthStore((state) => state.admin);
+  const pathname = usePathname();
+
+  const pageTitle = pathname.startsWith("/admin/dashboard") ? "Dashboard" : pathname.startsWith("/admin/users") ? "User Directory" : pathname.startsWith("/admin/trips") ? "Trip Directory" : pathname.startsWith("/admin/verifications") ? "Verifications" : pathname.startsWith("/admin/admins") ? "Administrators" : "Travel Buddy Admin";
   console.log(admin,"admin")
     const [mounted, setMounted] = useState(false);
     useEffect(() => {
@@ -14,7 +18,7 @@ export default function AdminTopBar() {
   return (
     <header className="h-14 fixed top-0 right-0 left-60 z-10 bg-white/90 backdrop-blur-xl border-b border-stone-200/50 flex items-center justify-between px-8">
       <div className="flex items-center gap-6">
-        <h1 className="text-lg font-bold text-[#1c1c1a]">User Directory</h1>
+        <h1 className="text-lg font-bold text-[#1c1c1a]">{pageTitle}</h1>
 
         {/* <div className="relative w-96 group">
           <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#3f4944]">
@@ -26,10 +30,10 @@ export default function AdminTopBar() {
       </div>
 
       <div className="flex items-center gap-4">
-        <button className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-stone-50 active:scale-90 transition-transform text-[#3f4944] relative">
+        {/* <button className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-stone-50 active:scale-90 transition-transform text-[#3f4944] relative">
           <NotificationsIcon />
           <span className="absolute top-2 right-2 w-2 h-2 bg-[#ba1a1a] rounded-full border-2 border-white" />
-        </button>
+        </button> */}
 
         <div className="h-8 w-px bg-[#bec9c3]/30 mx-1" />
 

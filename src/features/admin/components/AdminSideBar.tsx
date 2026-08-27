@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAdminLogout } from "../features/auth/hooks/admin-auth.hooks";
 import { useAuthStore } from "@/src/store/auth.store";
-import { AdminIcon, AssessmentIcon, ExploreIcon, GroupIcon, LogoutIcon } from "@/src/assets/icons";
+import { AdminIcon, AssessmentIcon, DashboardIcon, ExploreIcon, GroupIcon, LogoutIcon, MonitoringIcon } from "@/src/assets/icons";
 import { useEffect, useState } from "react";
 import { useAdminAuthStore } from "@/src/store/adminAuth.store";
 
@@ -15,10 +15,10 @@ type NavItem = {
 };
 
 const navItems: NavItem[] = [
-  // { href: "/admin/dashboard", label: "Dashboard", icon: <Icons.DashboardIcon /> },
+  { href: "/admin/dashboard", label: "Dashboard", icon: <DashboardIcon /> },
   { href: "/admin/users", label: "All Users", icon: <GroupIcon /> },
   { href: "/admin/trips", label: "All Trips", icon: <ExploreIcon /> },
-  { href: "/admin/verifications", label: "Verifications", icon: <AssessmentIcon/> },
+  { href: "/admin/verifications", label: "Verifications", icon: <MonitoringIcon /> },
   // { href: "/admin/reports", label: "Reports", icon: <Icons.AssessmentIcon /> },
   // { href: "/admin/analytics", label: "Analytics", icon: <Icons.MonitoringIcon /> },
   { href: "/admin/admins", label: "Admins", icon: <AdminIcon /> },

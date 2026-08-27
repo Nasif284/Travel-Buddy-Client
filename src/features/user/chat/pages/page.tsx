@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import { AddCircleIcon, CallIcon, EditSquareIcon, InfoIcon, SearchIcon, SendIcon, SmileIcon, VideoIcon } from "../utils/icons";
@@ -13,51 +13,34 @@ import MessageBubble from "../components/MessageBubble";
 import { ChatMessageDTO, Conversation } from "../interfaces/interface";
 
 import { useChatSocket } from "../hooks/socketHooks";
-import { sendMessage } from "@/src/socket/chat/chat.socket";
+import { sendImageMessage, sendMessage } from "@/src/socket/chat/chat.socket";
 
-import { useGetConversations, useGetMessages } from "../hooks/hooks";
+import { useGetConversations, useGetMessages, useUploadImage } from "../hooks/hooks";
 
 import { useAuthStore } from "@/src/store/auth.store";
 import EmptyConversations from "../components/EmptyMessages";
+import CallSections from "../components/CallSections";
 
 export default function MessagesPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   // URL is the source of truth
-  const activeConversationId =
-    searchParams.get("conversationId") ?? "";
+  const activeConversationId = searchParams.get("conversationId") ?? "";
+  const currentUserId = useAuthStore((state) => state.user?.id);
 
-  const currentUserId = useAuthStore(
-    (state) => state.user?.id,
-  );
+  const [filter, setFilter] = useState<"all" | "unread">("all");
+  const [search, setSearch] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [messageText, setMessageText] = useState("");
 
-  const [filter, setFilter] =
-    useState<"all" | "unread">("all");
+  const { data: conversationsData, isLoading: convsLoading } = useGetConversations();
+  const conversations = conversationsData?.data?.conversations ?? [];
 
-  const [search, setSearch] =
-    useState("");
+  const { data, isLoading: messagesLoading } = useGetMessages(activeConversationId);
+  const messages = data?.data?.messages ?? [];
 
-  const [messageText, setMessageText] =
-    useState("");
-
-  const {
-    data: conversationsData,
-    isLoading: convsLoading,
-  } = useGetConversations();
-
-  const conversations =
-    conversationsData?.data?.conversations ?? [];
-
-  const {
-    data,
-    isLoading: messagesLoading,
-  } = useGetMessages(
-    activeConversationId,
-  );
-
-  const messages =
-    data?.data?.messages ?? [];
+  const { mutateAsync: uploadImage, isPending: isUploading } = useUploadImage();
 
   useChatSocket({
     conversationId: activeConversationId,
@@ -105,13 +88,41 @@ export default function MessagesPage() {
 
   const handleSend = () => {
     const content = messageText.trim();
-
     if (!content) return;
     sendMessage(activeConversationId, content);
     setMessageText("");
   };
 
-const activeConversation = conversations.find((conversation: Conversation) => conversation.conversationId === activeConversationId);  const visibleConversations = conversations;
+  const handleImageSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+
+    if (!file) return;
+
+    try {
+      const formData = new FormData();
+
+      formData.append("image", file);
+      formData.append("conversationId", activeConversationId);
+
+      const response = await uploadImage(formData);
+
+      const attachment = response.data;
+
+      sendImageMessage(activeConversationId, {
+        storageKey: attachment.storageKey,
+        fileName: attachment.fileName,
+        mimeType: attachment.mimeType,
+        fileSize: attachment.fileSize,
+      });
+    } catch (error) {
+      console.error("Failed to upload image:", error);
+    } finally {
+      event.target.value = "";
+    }
+  };
+
+  const activeConversation = conversations.find((conversation: Conversation) => conversation.conversationId === activeConversationId) as Conversation;
+  const visibleConversations = conversations;
   //   const visibleConversations = useMemo(() => {
   //     const normalizedSearch = search.trim().toLowerCase();
 
@@ -143,7 +154,6 @@ const activeConversation = conversations.find((conversation: Conversation) => co
   //     ]);
   //     setMessageText("");
   //   }
-
   return (
     <main className="ml-64 flex h-screen pt-20">
       <div className="flex min-h-0 flex-1 overflow-hidden">
@@ -156,19 +166,19 @@ const activeConversation = conversations.find((conversation: Conversation) => co
               </button>
             </div>
 
-            <div className="relative mb-6">
+            {/* <div className="relative mb-6">
               <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-outline" />
               <input value={search} onChange={(event) => setSearch(event.target.value)} className="w-full rounded-xl border-0 bg-surface-container-highest py-2.5 pl-10 pr-4 text-sm outline-none ring-primary/20 transition-shadow focus:ring-2" placeholder="Search conversations" />
-            </div>
+            </div> */}
 
-            <div className="hide-scrollbar flex gap-2 overflow-x-auto pb-2">
+            {/* <div className="hide-scrollbar flex gap-2 overflow-x-auto pb-2">
               <FilterButton active={filter === "all"} onClick={() => setFilter("all")}>
                 All
               </FilterButton>
               <FilterButton active={filter === "unread"} onClick={() => setFilter("unread")}>
                 Unread
               </FilterButton>
-            </div>
+            </div> */}
           </div>
 
           <div className="custom-scrollbar flex-1 overflow-y-auto">
@@ -179,7 +189,7 @@ const activeConversation = conversations.find((conversation: Conversation) => co
                 <div className="min-w-0 flex-1">
                   <div className="flex items-baseline justify-between gap-2">
                     <h2 className="truncate text-sm font-bold">{conversation.user.name}</h2>
-                    <span className="shrink-0 text-[10px] font-medium text-outline">{conversation.lastMessage?.content}</span>
+                    {/* <span className="shrink-0 text-[10px] font-medium text-outline">{conversation.lastMessage?.content}</span> */}
                   </div>
                   {/* <p className="truncate text-xs text-on-surface-variant">{conversation.preview}</p> */}
                 </div>
@@ -195,64 +205,77 @@ const activeConversation = conversations.find((conversation: Conversation) => co
         </aside>
 
         <section className="relative flex min-w-0 flex-1 flex-col overflow-hidden bg-surface-container-low">
-          <header className="z-10 flex items-center justify-between bg-surface/80 px-8 py-4 backdrop-blur-xl">
-            <div className="flex items-center gap-3">
-              <Avatar avatar={activeConversation.user.profileImage} name={activeConversation.user.name} online />
-              <div>
-                <h2 className="text-base font-bold">{activeConversation.user.name}</h2>
-                <span className="text-[10px] font-bold uppercase tracking-widest text-primary">Online</span>
+          {!activeConversation ? (
+            <div className="flex flex-1 items-center justify-center p-8">
+              <div className="max-w-sm text-center">
+                <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-secondary-container text-primary">
+                  <SendIcon />
+                </div>
+
+                <h2 className="font-headline text-xl font-bold text-on-surface">Select a conversation</h2>
+
+                <p className="mt-2 text-sm leading-relaxed text-on-surface-variant">Choose a conversation from the list to view messages and continue planning your next adventure.</p>
               </div>
             </div>
+          ) : (
+            <>
+              <header className="z-10 flex items-center justify-between bg-surface/80 px-8 py-4 backdrop-blur-xl">
+                <div className="flex items-center gap-3">
+                  <Avatar avatar={activeConversation.user.profileImage ?? ""} name={activeConversation.user.name} online />
 
-            <div className="flex items-center gap-2">
-              <ChatActionButton label="Call">
-                <CallIcon />
-              </ChatActionButton>
-              <ChatActionButton label="Start video call">
-                <VideoIcon />
-              </ChatActionButton>
-              <ChatActionButton label="Conversation information" muted>
-                <InfoIcon />
-              </ChatActionButton>
-            </div>
-          </header>
+                  <div>
+                    <h2 className="text-base font-bold">{activeConversation.user.name}</h2>
+                    {/* <span className="text-[10px] font-bold uppercase tracking-widest text-primary">Online</span> */}
+                  </div>
+                </div>
 
-          <div className="custom-scrollbar flex flex-1 flex-col gap-6 overflow-y-auto px-8 py-6">
-            <div className="self-center rounded-full bg-surface px-4 py-2 text-[11px] font-semibold text-on-surface-variant">You&apos;re connected with {activeConversation.name} · Bali trip</div>
+                <div className="flex items-center gap-2">
+                  <CallSections userId={activeConversation.user.id} userName={activeConversation.user.name} userProfileImage={activeConversation.user.profileImage!} />
+                  {/* <ChatActionButton label="Conversation information" muted>
+                    <InfoIcon />
+                  </ChatActionButton> */}
+                </div>
+              </header>
 
-            {activeMessages.map((message: ChatMessageDTO) => (
-              <MessageBubble key={message.id} currentUserId={currentUserId!} message={message} avatar={activeConversation.avatar} senderName={activeConversation.name} />
-            ))}
-          </div>
+              <div className="custom-scrollbar flex flex-1 flex-col gap-6 overflow-y-auto px-8 py-6">
+                <div className="self-center rounded-full bg-surface px-4 py-2 text-[11px] font-semibold text-on-surface-variant">You&apos;re connected with {activeConversation.user.name} · Bali trip</div>
 
-          <footer className="bg-surface px-8 py-6">
-            <div className="flex items-end gap-3 rounded-2xl border border-transparent bg-surface-container-highest p-2 pr-4 shadow-sm transition-colors focus-within:border-primary/20">
-              <button type="button" aria-label="Add emoji" className="p-2 text-outline hover:text-primary">
-                <SmileIcon />
-              </button>
-              <button type="button" aria-label="Add attachment" className="p-2 text-outline hover:text-primary">
-                <AddCircleIcon />
-              </button>
+                {activeMessages.map((message: ChatMessageDTO) => (
+                  <MessageBubble key={message.id} currentUserId={currentUserId!} message={message} avatar={activeConversation.user.profileImage ?? ""} senderName={activeConversation.user.name} />
+                ))}
+              </div>
+              <input ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/webp,image/gif" className="hidden" onChange={handleImageSelect} />
+              <footer className="bg-surface px-8 py-6">
+                <div className="flex items-end gap-3 rounded-2xl border border-transparent bg-surface-container-highest p-2 pr-4 shadow-sm transition-colors focus-within:border-primary/20">
+                  {/* <button type="button" aria-label="Add emoji" className="p-2 text-outline hover:text-primary">
+                    <SmileIcon />
+                  </button> */}
 
-              <textarea
-                value={messageText}
-                onChange={(event) => setMessageText(event.target.value)}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter" && !event.shiftKey) {
-                    event.preventDefault();
-                    handleSend();
-                  }
-                }}
-                rows={1}
-                placeholder="Type a message..."
-                className="custom-scrollbar max-h-32 flex-1 resize-none border-0 bg-transparent py-2.5 text-sm outline-none focus:ring-0"
-              />
+                  <button type="button" aria-label="Add attachment" disabled={isUploading} onClick={() => fileInputRef.current?.click()} className="p-2 text-outline hover:text-primary disabled:opacity-50">
+                    <AddCircleIcon />
+                  </button>
 
-              <button type="button" onClick={handleSend} aria-label="Send message" className="rounded-xl bg-primary-container p-2.5 text-white transition-transform active:scale-95 disabled:opacity-50" disabled={!messageText.trim()}>
-                <SendIcon />
-              </button>
-            </div>
-          </footer>
+                  <textarea
+                    value={messageText}
+                    onChange={(event) => setMessageText(event.target.value)}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter" && !event.shiftKey) {
+                        event.preventDefault();
+                        handleSend();
+                      }
+                    }}
+                    rows={1}
+                    placeholder="Type a message..."
+                    className="custom-scrollbar max-h-32 flex-1 resize-none border-0 bg-transparent py-2.5 text-sm outline-none focus:ring-0"
+                  />
+
+                  <button type="button" onClick={handleSend} disabled={!messageText.trim()} aria-label="Send message" className="rounded-xl bg-primary-container p-2.5 text-white transition-transform active:scale-95 disabled:opacity-50">
+                    <SendIcon />
+                  </button>
+                </div>
+              </footer>
+            </>
+          )}
         </section>
       </div>
     </main>

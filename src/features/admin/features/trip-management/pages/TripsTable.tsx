@@ -177,7 +177,7 @@ export default function AdminTripsPage() {
   ];
 
   return (
-    <main className="flex-grow p-8 pt-20 overflow-y-auto">
+    <main className="flex-grow p-8  overflow-y-auto">
       <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
         <div>
           <h2 className="text-3xl font-black tracking-tight text-[#1c1c1a]">All trips</h2>

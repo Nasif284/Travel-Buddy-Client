@@ -103,7 +103,7 @@ const MatchSuggestions = () => {
           </p>
 
           <Link
-            href="/trips/plans"
+            href="/trips/plans/active"
             className="
           inline-flex
           items-center

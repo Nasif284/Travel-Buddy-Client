@@ -88,41 +88,7 @@ const Icons = {
 };
 
 
-const ACTIVITIES: Activity[] = [
-  { month: "Jun", day: 14, title: "Sunrise Trek: Mount Batur", time: "04:00 AM", location: "Kintamani Village", highlight: true },
-  { month: "Jun", day: 15, title: "Uluwatu Temple Visit", time: "05:30 PM", location: "South Kuta" },
-  { month: "Jun", day: 16, title: "Surfing Lesson @ Canggu", time: "09:00 AM", location: "Echo Beach" },
-];
-
-const MESSAGES: Message[] = [
-  {
-    name: "Priya",
-    time: "2m ago",
-    text: "I've added the hotel booking details to the expenses!",
-    avatar: "https://lh3.googleusercontent.com/aida-public/AB6AXuCm5XpzuxL59onNGPfRYDrkk_nVeMYNv2Ds6vs4EPQYcjnajP7oPDnLrw4SUj2PMb3-P0NXTZriJju7UdLkwxGeuauhFKbNtwVjj7b2SP7KPBK0865aPGPYghK_XyK3qVVYksUzqd9DFhQoXMjAWX1RwJ6xVPjLm41FTAlxtbN6aAUU3yGUUDmRGBjEzW7lPszq4lfYmjv2uKX60zmKgHogK5j8CgwuNrwrViLXFy9FmZ9FX63V-o0TV5OsZ8j7p_PbpWHJDyEwVUI",
-  },
-  {
-    name: "Raj",
-    time: "45m ago",
-    text: "Is everyone okay with the 4 AM start for the trek?",
-    avatar: "https://lh3.googleusercontent.com/aida-public/AB6AXuC6LM_U_zTkRTMNcu9REJ74pL-ANo9a4JuvWQnpYpI9X02r-p-OARbUjhbvsRsUxdTAZuTGXHl_Q_3YYJyiUR80OQBjMPF0xpMKr_zclVoy4OthkbLjuXTQ3OulrcC-M5d7GOI2SWf6Ifjpksrmy-RljtA2nJlylJ5Z8NO_ASWxgtmyFHJgEydPSnDzdFtXf72CyNpyzPJk_6LH2kmz8_RgtalzbkX1ty1id8kVNZ2Qiogko82gz0h_R4qR2S1lkkpDjaJLplzjUB8",
-  },
-  {
-    name: "Sam",
-    time: "1h ago",
-    text: "Just finished packing. Can't wait! 🌴",
-    avatar: "https://lh3.googleusercontent.com/aida-public/AB6AXuCdQHbU0_vmBtxXF6AUiDbUsAorH9fufu6CO4Z3WN7nEIo9iKxWTWGhYtlAmaX7apc_bFIAGjV8eTAlEhim2tk4NYreyPKt9bBN38Eq_qlmvkrusQilK4RscYEQZOVXzep74ZyMnPDS8X3MGYA7csHl9sbZTpma9dXP3p4Fb2qHi9YVjBO19f7bzaqtc58mNu8hhOexJmbkw1H3fUfqGFBZiQdUslHbcbZvzSZOYIjRiVatUGcI1j8OeZvP5DY5JqKc7cqdNDCPvqw",
-  },
-];
-
-const INITIAL_CHECKLIST: ChecklistItem[] = [
-  { id: 1, label: "Confirm airport transfer", done: true },
-  { id: 2, label: "Book surf equipment", done: false },
-  { id: 3, label: "Offline maps download", done: false },
-];
-
 export default function TripOverviewPage() {
-  const [checklist, setChecklist] = useState<ChecklistItem[]>(INITIAL_CHECKLIST);
   const { id } = useParams();
 
   const { data: weatherData, isLoading: weatherLoading } = useGetWeather(id as string)
@@ -137,15 +103,11 @@ export default function TripOverviewPage() {
   const { data: expenseSummery, isLoading: summeryLoading } = useGetSummary(id as string);
   const summary = expenseSummery?.data;
 
-  const done = checklist.filter((i) => i.done).length;
-  const total = 14;
-  const checkPct =  summary?.total ? Math.round((summary.completed * 100) / summary.total) : 0;
-
 
   if (isLoading || summeryLoading || checklistSummeryLoading) {
     return <h2>Loading....</h2>;
   }
-
+  const checkPct = checkSummary?.total ? Math.round((checkSummary.completed * 100) / checkSummary.total) : 0;
   const days = new Date(trip.dateTo).getDate() - new Date(trip.dateFrom).getDate();
   const membersCount = trip.members.length;
   const GLANCE = [
@@ -171,69 +133,34 @@ export default function TripOverviewPage() {
             ))}
           </div>
         </section>
-
-        {/* Upcoming activities */}
-        {/* <section>
-          <div className="flex justify-between items-center mb-5">
-            <h2 className="text-xl font-bold tracking-tight text-[#181d1a] font-headline">Upcoming activities</h2>
-            <a href="#" className="text-[#005440] text-sm font-semibold flex items-center gap-1 hover:underline">
-              View all {Icons.arrowForward}
-            </a>
-          </div>
-          <div className="space-y-3">
-            {ACTIVITIES.map((act) => (
-              <div key={act.day} className="flex items-center gap-5 p-4 bg-white hover:bg-[#ebefeb] transition-all group cursor-pointer rounded-xl">
-                <div
-                  className={`flex-shrink-0 w-16 h-16 flex flex-col items-center justify-center rounded-xl
-                      ${act.highlight ? "bg-[#c9eadb] text-[#4d6b5f]" : "bg-[#ebefeb] text-[#3f4944]"}`}
-                >
-                  <span className="text-xs font-bold uppercase">{act.month}</span>
-                  <span className="text-xl font-black">{act.day}</span>
-                </div>
-                <div className="flex-grow">
-                  <h3 className="font-bold text-[#181d1a] group-hover:text-[#005440] transition-colors">{act.title}</h3>
-                  <div className="flex items-center gap-4 text-sm text-[#3f4944] mt-1">
-                    <span className="flex items-center gap-1">
-                      {Icons.clock} {act.time}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      {Icons.pin} {act.location}
-                    </span>
-                  </div>
-                </div>
-                <span className="text-[#bec9c3] group-hover:text-[#005440] transition-colors">{Icons.chevronRight}</span>
+        {/* Expenses summary */}
+        {summary.totalExpenses > 0 && (
+          <div className="bg-[#f1f4f1] p-6 rounded-2xl">
+            <h3 className="font-bold text-lg mb-4 font-headline">Expenses summary</h3>
+            <div className="mb-6">
+              <div className="flex justify-between text-xs font-bold mb-2">
+                <span className="text-[#3f4944]">Total Expense</span>
+                <span>₹{summary.totalExpenses}</span>
               </div>
-            ))}
-          </div>
-        </section> */}
-
-        {/* Recent messages */}
-        {/* <section>
-          <div className="flex justify-between items-center mb-5">
-            <h2 className="text-xl font-bold tracking-tight text-[#181d1a] font-headline">Recent messages</h2>
-            <a href="#" className="text-[#005440] text-sm font-semibold flex items-center gap-1 hover:underline">
-              Open Chat {Icons.chat}
-            </a>
-          </div>
-          <div className="bg-[#f1f4f1] rounded-xl overflow-hidden">
-            {MESSAGES.map((msg, i) => (
-              <div
-                key={msg.name}
-                className={`p-4 flex items-center gap-4 hover:bg-[#e5e9e5] transition-colors cursor-pointer
-                      ${i < MESSAGES.length - 1 ? "border-b border-[#bec9c3]/10" : ""}`}
-              >
-                <img src={msg.avatar} alt={msg.name} className="w-10 h-10 rounded-full object-cover flex-shrink-0" />
-                <div className="flex-grow min-w-0">
-                  <div className="flex justify-between items-baseline">
-                    <span className="font-bold text-sm">{msg.name}</span>
-                    <span className="text-[10px] text-[#3f4944] ml-2 flex-shrink-0">{msg.time}</span>
-                  </div>
-                  <p className="text-xs text-[#3f4944] truncate">{msg.text}</p>
+            </div>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between p-3 bg-[#ffdad6]/20 rounded-xl">
+                <div className="flex items-center gap-2 text-[#ba1a1a]">
+                  {Icons.trendingDown}
+                  <span className="text-xs font-medium text-[#181d1a]">You owe total</span>
                 </div>
+                <span className="text-sm font-bold text-[#ba1a1a]">₹{summary.youOwe.toFixed(2)}</span>
               </div>
-            ))}
+              <div className="flex items-center justify-between p-3 bg-[#c9eadb]/30 rounded-xl">
+                <div className="flex items-center gap-2 text-[#005440]">
+                  {Icons.trendingUp}
+                  <span className="text-xs font-medium text-[#181d1a]">You gets back Total</span>
+                </div>
+                <span className="text-sm font-bold text-[#005440]">₹{summary.youAreOwed.toFixed(2)}</span>
+              </div>
+            </div>
           </div>
-        </section> */}
+        )}
       </div>
 
       {/* ── Right column (40%) ─────────────────────────────── */}
@@ -302,35 +229,6 @@ export default function TripOverviewPage() {
           )}
         </div>
 
-        {/* Expenses summary */}
-        {summary.totalExpenses > 0 && (
-          <div className="bg-[#f1f4f1] p-6 rounded-2xl">
-            <h3 className="font-bold text-lg mb-4 font-headline">Expenses summary</h3>
-            <div className="mb-6">
-              <div className="flex justify-between text-xs font-bold mb-2">
-                <span className="text-[#3f4944]">Total Expense</span>
-                <span>₹{summary.totalExpenses}</span>
-              </div>
-            </div>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between p-3 bg-[#ffdad6]/20 rounded-xl">
-                <div className="flex items-center gap-2 text-[#ba1a1a]">
-                  {Icons.trendingDown}
-                  <span className="text-xs font-medium text-[#181d1a]">You owe total</span>
-                </div>
-                <span className="text-sm font-bold text-[#ba1a1a]">₹{summary.youOwe.toFixed(2)}</span>
-              </div>
-              <div className="flex items-center justify-between p-3 bg-[#c9eadb]/30 rounded-xl">
-                <div className="flex items-center gap-2 text-[#005440]">
-                  {Icons.trendingUp}
-                  <span className="text-xs font-medium text-[#181d1a]">You gets back Total</span>
-                </div>
-                <span className="text-sm font-bold text-[#005440]">₹{summary.youAreOwed.toFixed(2)}</span>
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* Shared checklist */}
         {checkSummary.total > 0 && (
           <div className="bg-[#f1f4f1] p-6 rounded-2xl">
@@ -339,7 +237,7 @@ export default function TripOverviewPage() {
               <div className="flex justify-between text-xs font-bold mb-2">
                 <span className="text-[#3f4944]">Overall progress</span>
                 <span>
-                  {summary.completed} of {summary.total} tasks completed
+                  {checkSummary.completed} of {checkSummary.total} tasks completed
                 </span>
               </div>
               <ProgressBar pct={checkPct} color="bg-[#adcebf]" />

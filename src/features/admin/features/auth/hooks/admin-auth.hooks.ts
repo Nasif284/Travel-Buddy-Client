@@ -16,7 +16,7 @@ export function useAdminLogin() {
       console.log(res,"response")
       setAdmin(res.data);
       toast.success(res.message);
-      router.push("/admin/users");
+      router.push("/admin/dashboard");
     },
     onError: (error: AxiosError<ApiError>) => {
       toast.error(error.response?.data?.error?.message || "Something went wrong");

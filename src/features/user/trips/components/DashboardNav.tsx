@@ -64,7 +64,7 @@ const TABS: { id: TabId; label: string; icon: React.ReactNode }[] = [
   { id: "checklist", label: "Checklist", icon: Icons.checklist },
   { id: "chat", label: "Chat", icon: Icons.chat },
   { id: "members", label: "Members", icon: Icons.group },
-  { id: "calls", label: "Calls", icon: Icons.phone },
+  // { id: "calls", label: "Calls", icon: Icons.phone },
 ];
 
 export default function DashboardNav() {

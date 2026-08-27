@@ -91,7 +91,7 @@ export default function AdminVerificationsPage() {
       </aside>
 
       {/* ── Detail panel ───────────────────────────────── */}
-      <main className="flex-1 mt-10 flex flex-col h-[calc(100vh-64px)]  overflow-hidden">
+      <main className="flex-1 flex flex-col h-[calc(100vh-64px)]  overflow-hidden">
         {detail ? (
           <VerificationDetail detail={detail} onApprove={handleApprove} onReject={handleReject} onRequestResubmit={handleRequestResubmit} isActioning={requestResubmission.isPending || reject.isPending || approve.isPending} />
         ) : (

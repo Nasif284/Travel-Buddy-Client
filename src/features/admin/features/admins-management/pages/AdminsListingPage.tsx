@@ -28,7 +28,7 @@ export default function AdminSettingsPage() {
   console.log(accounts)
   return (
     <>
-      <main className="ml-0 mt-14 min-h-screen pb-32">
+      <main className="ml-0 min-h-screen pb-32">
         <div className="p-8">
           <div className="flex justify-between items-end mb-8">
             <div>

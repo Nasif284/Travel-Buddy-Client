@@ -74,7 +74,7 @@ export default function AdminUserDetailPage() {
 
   if (isLoading ) {
     return (
-      <div className="p-8 pt-20">
+      <div className="p-8">
         <div className="h-40 bg-[#e5e2de] rounded-xl animate-pulse mb-8" />
         <div className="h-64 bg-[#e5e2de] rounded-xl animate-pulse" />
       </div>
@@ -85,11 +85,11 @@ export default function AdminUserDetailPage() {
   const statCards = [
     { label: "Trips", value: profile?.tripCount, color: "text-[#1c1c1a]" },
     { label: "Buddies", value: profile?.connectionsCount, color: "text-[#1c1c1a]" },
-    { label: "Rating", value: "0", color: "text-[#1c1c1a]", star: true },
-    { label: "Reports", value: "0", color: "text-[#ba1a1a]" },
+    // { label: "Rating", value: "0", color: "text-[#1c1c1a]", star: true },
+    // { label: "Reports", value: "0", color: "text-[#ba1a1a]" },
   ];
   return (
-    <div className="p-8 pt-20 space-y-8 max-w-7xl mx-auto">
+    <div className="p-8 space-y-8 max-w-7xl mx-auto">
       {/* ── Profile header ─────────────────────────────────────── */}
       <section className="bg-white rounded-xl p-8 flex flex-col md:flex-row gap-8 items-start relative overflow-hidden border border-[#bec9c3]/15 shadow-sm">
         {/* Decorative blob */}

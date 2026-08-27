@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function UserManagementPage() {
   return (
-    <main className="flex-grow p-8 pt-20 overflow-y-auto">
+    <main className="flex-grow p-8  overflow-y-auto">
       <UsersTable />
     </main>
   );

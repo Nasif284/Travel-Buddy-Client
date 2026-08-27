@@ -13,15 +13,16 @@ export default function TopBar() {
     <header className="fixed top-0 right-0 left-64 h-20 bg-white/80 backdrop-blur-xl z-40 px-12 flex justify-between items-center border-b border-[#bec9c3]/15">
       <LocationBadge />
       <div className="flex items-center gap-6">
-        <button className="hover:bg-[#f1f4f1] rounded-full p-2 transition-all active:scale-95 text-[#0F6E56]">
+        {/* <button className="hover:bg-[#f1f4f1] rounded-full p-2 transition-all active:scale-95 text-[#0F6E56]">
           <NotificationsIcon />
-        </button>
+        </button> */}
         <Link href={"/settings"}>
           <button className="hover:bg-[#f1f4f1] rounded-full p-2 transition-all active:scale-95 text-[#0F6E56]">
             <TuneIcon />
           </button>
         </Link>
-      <Avatar/>
+
+        <Avatar />
       </div>
     </header>
   );

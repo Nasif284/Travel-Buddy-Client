@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useLogout } from "../features/user/auth/hooks/auth.hooks";
-import { ChatIcon, ConnectionsIcon, ExploreIcon, HeartIcon, HomeIcon, PersonIcon, SettingsIcon } from "../assets/icons";
+import { AiAssistantIcon, ChatIcon, ConnectionsIcon, ExploreIcon, HeartIcon, HomeIcon, PersonIcon, SettingsIcon } from "../assets/icons";
 
 type NavItem = { href: string; label: string; icon: React.ReactNode };
 
@@ -33,6 +33,11 @@ const NAV_ITEMS: NavItem[] = [
     href: "/trips/groups",
     label: "Trip Groups",
     icon: <ConnectionsIcon />,
+  },
+  {
+    href: "/ai-assistant",
+    label: "AI Assistant",
+    icon: <AiAssistantIcon />,
   },
   {
     href: "/messages",

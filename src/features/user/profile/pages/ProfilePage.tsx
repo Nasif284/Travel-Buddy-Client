@@ -258,22 +258,20 @@ export default function ProfileManagement() {
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-5">
+          {/* <div className="grid grid-cols-3 sm:grid-cols-3 items-center justify-center gap-5">
             {[
               { label: "Trips", value: "6" },
-              { label: "Avg Rating", value: "4.8", star: true },
-              { label: "Buddies", value: "9" },
-              { label: "Active", value: "3" },
+              { label: "Buddies", value: "9", star:false },
+              { label: "Active Trips", value: "3" },
             ].map((stat) => (
               <div key={stat.label} className={`bg-white p-5 rounded-2xl border border-[#bec9c3]/15 flex flex-col items-center text-center ${stat.star ? "border-b-4 border-b-[#005440]" : ""}`}>
                 <div className="flex items-baseline gap-1">
                   <p className="text-2xl font-black text-[#005440]">{stat.value}</p>
-                  {stat.star && <StarFull />}
                 </div>
                 <p className="text-[11px] text-[#3f4944]/70 font-bold uppercase tracking-wider mt-1">{stat.label}</p>
               </div>
             ))}
-          </div>
+          </div> */}
 
           {/* Main Management Area */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -309,7 +307,7 @@ export default function ProfileManagement() {
               </div>
 
               {/* Reviews */}
-              <div className="bg-white p-8 rounded-3xl border border-[#bec9c3]/15">
+              {/* <div className="bg-white p-8 rounded-3xl border border-[#bec9c3]/15">
                 <div className="flex justify-between items-center mb-8">
                   <h3 className="text-xl font-bold flex items-center gap-2 font-headline">
                     <span className="text-[#005440]">
@@ -357,7 +355,7 @@ export default function ProfileManagement() {
                 </div>
 
                 <button className="w-full mt-8 py-3 rounded-xl bg-[#f1f4f1] text-[#005440] font-bold text-sm hover:bg-[#e5e9e5] transition-colors">View All 12 Reviews</button>
-              </div>
+              </div> */}
             </div>
 
             {/* Right column: Preferences */}
@@ -449,7 +447,7 @@ export default function ProfileManagement() {
               </div>
 
               {/* Trust Card */}
-              <div className="bg-[#005440] p-8 rounded-3xl text-white relative overflow-hidden">
+              {/* <div className="bg-[#005440] p-8 rounded-3xl text-white relative overflow-hidden">
                 <div className="relative z-10">
                   <div className="flex items-center gap-3 mb-4">
                     <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center">
@@ -463,7 +461,7 @@ export default function ProfileManagement() {
                 <svg viewBox="0 0 24 24" className="absolute -bottom-10 -right-10 w-[200px] h-[200px] fill-current text-white/5 pointer-events-none rotate-12">
                   <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z" />
                 </svg>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

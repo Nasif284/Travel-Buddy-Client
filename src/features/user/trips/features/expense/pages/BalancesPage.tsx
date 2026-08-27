@@ -12,7 +12,7 @@ import { useAuthStore } from "@/src/store/auth.store";
 
 export default function ExpenseBalancesPage() {
   const { id } = useParams();
-    const currentUserId = useAuthStore((store)=> store.user?.id)
+  const currentUserId = useAuthStore((store) => store.user?.id);
   const [simplify, setSimplify] = useState(true);
   const { data: balancesData, isLoading: loading } = useGetBalances(id as string, simplify ? "SIMPLIFIED" : "ORIGINAL");
   const data = balancesData?.data;
@@ -21,8 +21,8 @@ export default function ExpenseBalancesPage() {
     tx: ExpenseBalanceTransactionDTO;
   } | null>(null);
 
-  const currentUser = data?.members.find((m:ExpenseBalanceMemberDTO) => m.memberId === currentUserId);
-  const allSettled = data?.members.every((m:ExpenseBalanceMemberDTO) => m.status === "SETTLED");
+  const currentUser = data?.members.find((m: ExpenseBalanceMemberDTO) => m.memberId === currentUserId);
+  const allSettled = data?.members.every((m: ExpenseBalanceMemberDTO) => m.status === "SETTLED");
 
   return (
     <div className="space-y-6">
@@ -85,7 +85,7 @@ export default function ExpenseBalancesPage() {
             <h3 className="text-[10px] font-bold text-[#9ca8a3] uppercase tracking-widest">Group Balances</h3>
           </div>
           <div>
-            {data.members.map((member:ExpenseBalanceMemberDTO) => (
+            {data.members.map((member: ExpenseBalanceMemberDTO) => (
               <MemberRow key={member.memberId} member={member} isCurrentUser={member.memberId === currentUserId} onSettle={(tx) => setSettleTarget({ payer: member, tx })} />
             ))}
           </div>

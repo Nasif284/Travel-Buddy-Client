@@ -62,7 +62,7 @@ export function useGetSummary(id: string) {
 
 export function useGetBalances(id: string, mode: "ORIGINAL" | "SIMPLIFIED") {
   return useQuery({
-    queryKey: ["expenses_balances", id],
+    queryKey: ["expenses_balances", id,mode],
     queryFn: () => expenseServices.getBalances(id, mode),
     enabled: !!id,
   });
