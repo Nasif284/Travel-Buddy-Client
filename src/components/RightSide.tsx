@@ -1,7 +1,4 @@
 "use client";
-import Link from "next/link";
-import { NEARBY_TRAVELERS } from "../Data/data";
-import { LocationIcon, StarFull, StarHalf } from "../assets/icons";
 import { useGetActiveTrip } from "../features/user/matches-connections/hooks/matches.hooks";
 import LoadingSpinner from "./Loading";
 import InstallPWA from "./InstallPWA";

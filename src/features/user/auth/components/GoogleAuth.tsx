@@ -2,8 +2,9 @@
 import { useSearchParams } from "next/navigation";
 import { useGoogleAuth } from "../hooks/auth.hooks";
 import { useGoogleLogin } from "@react-oauth/google";
+import { Suspense } from "react";
 
-const GoogleAuth = () => {
+const GoogleAuthContent = () => {
   const googleAuth = useGoogleAuth();
   const params = useSearchParams();
   const redirect = params.get("redirect");
@@ -36,6 +37,14 @@ const GoogleAuth = () => {
         <div className="flex-grow h-px bg-[#bec9c3]/30" />
       </div>
     </div>
+  );
+};
+
+const GoogleAuth = () => {
+  return (
+    <Suspense fallback={<div className="mb-8 h-12 bg-gray-100 animate-pulse rounded-xl" />}>
+      <GoogleAuthContent />
+    </Suspense>
   );
 };
 

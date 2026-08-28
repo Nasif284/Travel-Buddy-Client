@@ -23,7 +23,7 @@ export function useTravelerProfile(id: string) {
   });
 }
 
-export function useGetMe(enabled:boolean) {
+export function useGetMe(enabled:boolean= true) {
   return useQuery({
     queryKey: ["user_profile"],
     queryFn: () => usersServices.getMe(),

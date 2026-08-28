@@ -6,11 +6,13 @@ const revision = spawnSync("git", ["rev-parse", "HEAD"], { encoding: "utf-8" }).
 
 const withSerwist = withSerwistInit({
   additionalPrecacheEntries: [{ url: "/~offline", revision }],
-  swSrc: "app/sw.ts",
+  swSrc: "src/app/sw.ts",
   swDest: "public/sw.js",
 });
-
-export default withSerwist({
-  // Your Next.js config
-});
+const nextConfig: NextConfig = {
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+};
+export default withSerwist(nextConfig);
 

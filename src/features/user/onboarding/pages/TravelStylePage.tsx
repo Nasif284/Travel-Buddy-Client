@@ -39,7 +39,7 @@ export default function TravelStylePage() {
   useEffect(() => {
     if (!me) return;
     setTravelStyle(capitalizeFirstLetter(me.travelType) as TravelStyle);
-    setInterests(new Set(me.interests.map((i) => capitalizeFirstLetter(i)) as Interest[]));
+    setInterests(new Set(me.interests.map((i:string) => capitalizeFirstLetter(i)) as Interest[]));
     setPersonality(capitalizeFirstLetter(me.travelPersonality) as Personality);
     setMatchPref(capitalizeFirstLetter(me.matchWith) as MatchPref);
   }, [me]);

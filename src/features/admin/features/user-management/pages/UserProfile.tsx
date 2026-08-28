@@ -136,12 +136,12 @@ export default function AdminUserDetailPage() {
 
         {/* Stats */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 w-full md:w-auto">
-          {statCards.map(({ label, value, color, star }) => (
+          {statCards.map(({ label, value, color }) => (
             <div key={label} className="bg-[#f6f3ef] p-4 rounded-xl text-center min-w-[90px]">
               <p className="text-[#3f4944] text-[10px] font-bold uppercase tracking-widest mb-1">{label}</p>
               <div className={`flex items-center justify-center gap-1 text-2xl font-extrabold ${color}`}>
                 {value}
-                {star && <span className="text-[#005440]">{Icons.star}</span>}
+                {/* {star && <span className="text-[#005440]">{Icons.star}</span>} */}
               </div>
             </div>
           ))}
