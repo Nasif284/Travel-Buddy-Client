@@ -38,6 +38,9 @@ export function useChatSocket({ conversationId }: UseChatSocketProps) {
           };
         },
       );
+      queryClient.invalidateQueries({
+        queryKey: ["conversations"],
+      });
     },
     [conversationId, queryClient],
   );
