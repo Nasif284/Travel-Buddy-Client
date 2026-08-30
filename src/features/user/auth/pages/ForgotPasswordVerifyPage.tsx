@@ -1,27 +1,32 @@
-"use client"
+"use client";
+
+import { useEffect, useState } from "react";
 import OTPVerificationCard from "../components/OTPVerificationCard";
 import { useSendOtp, useVerifyOtp } from "../hooks/auth.hooks";
 
 export default function ForgotPasswordVerifyPage() {
-  const email = localStorage.getItem("email");
+  const [email, setEmail] = useState("");
 
   const verify = useVerifyOtp();
-
   const resend = useSendOtp();
+
+  useEffect(() => {
+    setEmail(localStorage.getItem("email") ?? "");
+  }, []);
 
   return (
     <OTPVerificationCard
-      email={email ?? ""}
+      email={email}
       onVerify={(code) =>
         verify.mutate({
-          email: email ?? "",
+          email,
           code,
           purpose: "password_reset",
         })
       }
       onResend={() =>
         resend.mutate({
-          email: email ?? "",
+          email,
           purpose: "password_reset",
         })
       }
